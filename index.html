@@ -233,10 +233,95 @@ header{
 .hint-box.visible{display:block}
 .hint-box b{color:var(--accent)}
 .ai-badge{display:inline-flex;align-items:center;gap:0.3rem;font-size:0.65rem;font-family:'JetBrains Mono',monospace;color:var(--ai);background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.2);padding:0.15rem 0.5rem;border-radius:3px;margin-left:0.4rem}
+
+/* CELEBRATION TOAST */
+.toast{
+  position:fixed;bottom:2rem;right:2rem;z-index:1000;
+  background:var(--surface2);border:1px solid var(--border2);
+  border-radius:12px;padding:1.1rem 1.4rem;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4);
+  display:flex;align-items:flex-start;gap:0.9rem;
+  max-width:320px;
+  transform:translateY(120px);opacity:0;
+  transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  pointer-events:none;
+}
+.toast.show{transform:translateY(0);opacity:1;pointer-events:auto}
+.toast-emoji{font-size:1.5rem;line-height:1;flex-shrink:0;margin-top:0.1rem}
+.toast-body{}
+.toast-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:0.2rem;letter-spacing:-0.02em}
+.toast-msg{font-size:0.78rem;color:var(--text2);line-height:1.5}
+.toast-xp{display:inline-block;margin-top:0.4rem;font-size:0.68rem;font-family:'JetBrains Mono',monospace;color:var(--accent);background:rgba(0,212,170,0.1);padding:0.15rem 0.5rem;border-radius:3px}
+.toast-close{position:absolute;top:0.6rem;right:0.75rem;background:none;border:none;color:var(--text3);cursor:pointer;font-size:0.9rem;line-height:1}
+
+/* CONFETTI */
+.confetti-piece{position:fixed;width:8px;height:8px;border-radius:2px;pointer-events:none;z-index:999;animation:confettiFall 1.8s ease-in forwards}
+@keyframes confettiFall{
+  0%{transform:translateY(-20px) rotate(0deg);opacity:1}
+  100%{transform:translateY(100vh) rotate(720deg);opacity:0}
+}
+
+/* COUNTDOWN BANNER */
+.countdown-bar{
+  background:linear-gradient(90deg,rgba(168,85,247,0.08),rgba(0,212,170,0.06));
+  border:1px solid rgba(0,212,170,0.12);border-radius:8px;
+  padding:0.7rem 1rem;display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:0;
+}
+.countdown-label{font-size:0.72rem;color:var(--text2)}
+.countdown-label b{color:var(--accent)}
+.countdown-time{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:var(--text);letter-spacing:-0.02em}
+.countdown-unit{font-size:0.65rem;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-left:0.2rem}
+
+/* ENCOURAGEMENT STRIP */
+.encourage-strip{
+  background:rgba(0,212,170,0.04);border:1px solid rgba(0,212,170,0.1);
+  border-radius:8px;padding:0.65rem 1rem;
+  font-size:0.78rem;color:var(--text2);line-height:1.5;
+  display:flex;align-items:center;gap:0.6rem;
+}
+.encourage-strip .enc-icon{font-size:1rem;flex-shrink:0}
+.encourage-strip em{color:var(--accent);font-style:normal;font-weight:500}
+
+/* LESSON NUDGE */
+.lesson-nudge{
+  background:rgba(245,166,35,0.04);border-left:3px solid rgba(245,166,35,0.3);
+  padding:0.65rem 1rem;margin-top:1rem;border-radius:0 6px 6px 0;
+  font-size:0.78rem;color:var(--text2);line-height:1.5;
+}
+.lesson-nudge.sql-nudge{background:rgba(77,142,245,0.04);border-left-color:rgba(77,142,245,0.3)}
+.lesson-nudge.ai-nudge{background:rgba(168,85,247,0.04);border-left-color:rgba(168,85,247,0.3)}
+.lesson-nudge b{color:var(--text)}
+
+/* XP PULSE */
+@keyframes xpPulse{0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
+.xp-pulse{animation:xpPulse 0.4s ease}
+
+/* PROGRESS MILESTONE */
+.milestone-banner{
+  background:linear-gradient(135deg,rgba(0,212,170,0.1),rgba(77,142,245,0.06));
+  border:1px solid rgba(0,212,170,0.2);border-radius:10px;
+  padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;
+  margin-bottom:0.5rem;
+}
+.milestone-icon{font-size:1.6rem}
+.milestone-text h4{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;letter-spacing:-0.02em;color:var(--text);margin-bottom:0.15rem}
+.milestone-text p{font-size:0.78rem;color:var(--text2)}
 </style>
 </head>
 <body>
 <div class="app">
+
+<!-- CELEBRATION TOAST -->
+<div class="toast" id="toast">
+  <button class="toast-close" onclick="hideToast()">✕</button>
+  <div class="toast-emoji" id="toast-emoji">🎉</div>
+  <div class="toast-body">
+    <div class="toast-title" id="toast-title">Great work!</div>
+    <div class="toast-msg" id="toast-msg"></div>
+    <span class="toast-xp" id="toast-xp">+40 XP</span>
+  </div>
+</div>
 
 <!-- HEADER -->
 <header>
@@ -707,6 +792,10 @@ function renderLesson(lesson) {
   const diffColors=['','#00d4aa','#f5a623','#f56b6b'];
   const diffPips=[1,2,3].map(i=>`<div class="diff-pip" style="${i<=ex.diff?`background:${diffColors[ex.diff]}`:''};width:8px;height:8px;border-radius:2px"></div>`).join('');
 
+  const nudgeText = lessonNudges[lesson.id] || '';
+  const nudgeClass = lesson.type==='sql'?'sql-nudge':lesson.type==='ai'?'ai-nudge':'';
+  const nudgeHtml = nudgeText ? `<div class="lesson-nudge ${nudgeClass}">💡 <b>A note:</b> ${nudgeText}</div>` : '';
+
   content.innerHTML=`<div class="lesson-view fade-in">
     <div class="lesson-left">
       <div class="lesson-tag ${tagClass}">${lesson.tag}</div>
@@ -714,6 +803,7 @@ function renderLesson(lesson) {
       <div class="lesson-subtitle">${lesson.subtitle}</div>
       ${conceptsHtml}
       ${calloutHtml}
+      ${nudgeHtml}
     </div>
     <div class="lesson-right">
       <div class="exercise-header">
@@ -748,11 +838,35 @@ function renderHome() {
   const pyPct=Math.round(pyDone/curriculum.python.length*100);
   const sqlPct=Math.round(sqlDone/curriculum.sql.length*100);
   const aiPct=Math.round(aiDone/curriculum.ai.length*100);
+  const totalDone=pyDone+sqlDone+aiDone;
+  const totalLessons=curriculum.python.length+curriculum.sql.length+curriculum.ai.length;
+
+  // Pick a random encouragement
+  const enc = encouragements[Math.floor(Math.random()*encouragements.length)];
+
+  // Milestone banners
+  let milestoneBanner='';
+  if(totalDone>=totalLessons){
+    milestoneBanner=`<div class="milestone-banner"><div class="milestone-icon">🏆</div><div class="milestone-text"><h4>All lessons complete!</h4><p>You've done everything here. Now go show them what you've got on Thursday. We're rooting for you.</p></div></div>`;
+  } else if(totalDone>=10){
+    milestoneBanner=`<div class="milestone-banner"><div class="milestone-icon">🔥</div><div class="milestone-text"><h4>10 lessons down!</h4><p>Double digits. You're genuinely prepared now — this is not beginner territory anymore.</p></div></div>`;
+  } else if(totalDone>=5){
+    milestoneBanner=`<div class="milestone-banner"><div class="milestone-icon">⚡</div><div class="milestone-text"><h4>Halfway there!</h4><p>5+ lessons complete. You're making real, tangible progress. Point72 is closer than it feels.</p></div></div>`;
+  }
+
+  const c=getCountdown();
+  const countdownLive=c?`${c.days}d ${c.hours}h ${c.mins}m`:'Interview day!';
 
   content.innerHTML=`<div class="dash-view fade-in">
+    ${countdownHTML()}
+    ${milestoneBanner}
+    <div class="encourage-strip">
+      <span class="enc-icon">💬</span>
+      <span>${enc}</span>
+    </div>
     <div class="dash-hero">
       <h1>Ready for <em>Point72</em>.</h1>
-      <p>Your personalised prep track for the Senior BA role at Cubist Systematic Strategies. Python, SQL, AI engineering, and market knowledge — built for the JD.</p>
+      <p>Your personalised prep track for the Senior BA role at Cubist Systematic Strategies. Python, SQL, AI engineering, and market knowledge — built around the exact JD.</p>
       <div class="dash-target">
         <div class="target-logo">P72</div>
         <div class="target-text">
@@ -762,7 +876,7 @@ function renderHome() {
       </div>
     </div>
     <div class="dash-grid">
-      <div class="stat-card"><div class="stat-val green">${pyDone+sqlDone+aiDone}</div><div class="stat-label">Lessons Done</div></div>
+      <div class="stat-card"><div class="stat-val green">${totalDone}</div><div class="stat-label">Lessons Done</div></div>
       <div class="stat-card"><div class="stat-val amber">${xp}</div><div class="stat-label">XP Earned</div></div>
       <div class="stat-card"><div class="stat-val purple">${aiDone}</div><div class="stat-label">AI Lessons</div></div>
       <div class="stat-card"><div class="stat-val blue">10</div><div class="stat-label">Interview Q&As</div></div>
@@ -773,25 +887,25 @@ function renderHome() {
         <div class="track-name" style="color:var(--py)">Python Track</div>
         <div class="track-desc">Variables, data structures, loops, functions, Pandas — all with trading data as context.</div>
         <div class="track-progress-bar"><div class="track-fill fill-py" style="width:${pyPct}%"></div></div>
-        <div class="track-pct">${pyDone}/${curriculum.python.length} lessons · ${pyPct}%</div>
+        <div class="track-pct">${pyDone}/${curriculum.python.length} lessons · ${pyPct}%${pyDone===curriculum.python.length?' · ✓ Complete!':''}</div>
       </div>
       <div class="track-card" onclick="setMode('sql')">
         <div class="track-icon">🗄️</div>
         <div class="track-name" style="color:var(--sql)">SQL Track</div>
         <div class="track-desc">SELECT, WHERE, GROUP BY, JOINs — all in the context of trade DBs and PnL reporting.</div>
         <div class="track-progress-bar"><div class="track-fill fill-sql" style="width:${sqlPct}%"></div></div>
-        <div class="track-pct">${sqlDone}/${curriculum.sql.length} lessons · ${sqlPct}%</div>
+        <div class="track-pct">${sqlDone}/${curriculum.sql.length} lessons · ${sqlPct}%${sqlDone===curriculum.sql.length?' · ✓ Complete!':''}</div>
       </div>
       <div class="track-card" onclick="setMode('ai')">
         <div class="track-icon">🤖</div>
         <div class="track-name" style="color:var(--ai)">AI Engineering</div>
         <div class="track-desc">LLMs, Claude API, MCP protocol, React hooks, OpenAI/Codex, and AI agents — the frontier skill set.</div>
         <div class="track-progress-bar"><div class="track-fill fill-ai" style="width:${aiPct}%"></div></div>
-        <div class="track-pct">${aiDone}/${curriculum.ai.length} lessons · ${aiPct}%</div>
+        <div class="track-pct">${aiDone}/${curriculum.ai.length} lessons · ${aiPct}%${aiDone===curriculum.ai.length?' · ✓ Complete!':''}</div>
       </div>
     </div>
     <div class="next-up">
-      <h3>Continue Learning</h3>
+      <h3>Continue Learning — <span id="countdown-live" style="color:var(--accent2)">${countdownLive}</span> until interview</h3>
       <div class="next-items">
         <div class="next-item" onclick="setMode('python');selectLesson('py2')">
           <div class="next-num py">Py</div>
@@ -830,6 +944,137 @@ function renderInterview() {
 }
 
 // ═══════════════════════════════════════════════════════════
+// ENCOURAGEMENT DATA
+// ═══════════════════════════════════════════════════════════
+
+const celebrationMessages = {
+  py1: { emoji:'🌟', title:'First one down!', msg:'You just defined your first trading data structure. Every quant analyst started exactly here.' },
+  py2: { emoji:'🔥', title:'Lists & dicts mastered!', msg:'This is honestly one of the most used patterns in real trading code. You\'re building real intuition.' },
+  py3: { emoji:'⚡', title:'Logic unlocked!', msg:'Loops + conditionals — this is the engine of every automated trading rule. Incredible progress.' },
+  py4: { emoji:'💡', title:'Functions nailed!', msg:'You just wrote reusable, production-style code. That\'s not beginner work — that\'s analyst work.' },
+  py5: { emoji:'🏆', title:'Pandas complete!', msg:'Python track done. Seriously impressive for someone balancing a full-time job. Point72 would be lucky to have you.' },
+  sql1: { emoji:'🗄️', title:'SQL begins!', msg:'Your first query ran. This is the skill that will open the most doors in your career — you\'re on your way.' },
+  sql2: { emoji:'🎯', title:'WHERE clause done!', msg:'Filtering data is 80% of what analysts do in SQL day-to-day. You just levelled up significantly.' },
+  sql3: { emoji:'📊', title:'Aggregation mastered!', msg:'GROUP BY + HAVING is the most-tested SQL concept in finance interviews. You just cracked it.' },
+  sql4: { emoji:'🔗', title:'JOINs complete!', msg:'SQL track finished! JOINs are what separate "can write SQL" from "actually knows SQL." You know SQL.' },
+  ai1: { emoji:'🤖', title:'AI foundations in!', msg:'You understand how LLMs work at a conceptual level. Most people your seniority don\'t — this is a genuine edge.' },
+  ai2: { emoji:'🛠️', title:'Tool use understood!', msg:'Function calling is the bridge between AI and real systems. You just crossed it.' },
+  ai3: { emoji:'🔌', title:'MCP cracked!', msg:'MCP is literally a 2024 invention — you\'re learning cutting-edge infrastructure. This is impressive.' },
+  ai4: { emoji:'⚛️', title:'React hooks done!', msg:'useState + useEffect — these two hooks power most of the web\'s AI interfaces. You\'ve got it.' },
+  ai5: { emoji:'🧠', title:'OpenAI API complete!', msg:'You can now talk to both Claude and GPT-4o. You\'re bilingual in AI.' },
+  ai6: { emoji:'🚀', title:'Agents mastered!', msg:'AI Engineering track complete! You understand something most senior professionals don\'t yet. Remarkable.' }
+};
+
+const encouragements = [
+  "You're doing brilliantly — every concept you learn here is real-world applicable.",
+  "This is hard stuff. The fact that you're here doing it says a lot about you.",
+  "4 days is tight — but you're more capable than you think. Keep going.",
+  "Every exercise you complete is a talking point in Thursday's interview.",
+  "The best analysts aren't the ones who knew everything — they're the ones who learn fast. You qualify.",
+  "Point72 wants curiosity and drive above all else. You're showing both right now.",
+  "Take breaks when you need them. Rest is part of learning.",
+  "You already know more than you did an hour ago. That compounds.",
+  "Hard things become easy with repetition. This lesson will feel obvious next week."
+];
+
+const lessonNudges = {
+  py1: "Don't worry if this feels new — everyone Googles Python syntax at first. Even senior engineers.",
+  py2: "Lists and dicts might seem abstract now. Think of them as your Bloomberg fields — each key maps to a value.",
+  py3: "Read the code out loud as you type. Loops make more sense when you narrate them.",
+  py4: "Functions are just named recipes. You already follow recipes — this is the same thing.",
+  py5: "Pandas has a learning curve, but once it clicks, you'll wonder how anyone analysed data without it.",
+  sql1: "SQL reads almost like English. 'SELECT this FROM there WHERE that' — say it out loud.",
+  sql2: "The WHERE clause is the most used thing in SQL. Master this and you've won half the battle.",
+  sql3: "GROUP BY trips people up at first — think of it like a pivot table in Excel. Same idea.",
+  sql4: "JOINs are the 'aha' moment of SQL. Take your time — once it clicks, it stays.",
+  ai1: "You don't need to understand the maths to understand how to use LLMs. Think of it as a very good autocomplete.",
+  ai2: "The Claude API is one of the best-documented APIs out there. If you get stuck, the docs are genuinely great.",
+  ai3: "MCP is brand new — even most engineers haven't heard of it yet. You're ahead of the curve.",
+  ai4: "React hooks are tricky at first. useState is just a variable that makes the screen update automatically.",
+  ai5: "Claude and GPT-4o are more similar than different. Learn one, you know both.",
+  ai6: "Agents are the frontier of AI right now. Understanding them conceptually puts you in rare company."
+};
+
+// ═══════════════════════════════════════════════════════════
+// COUNTDOWN
+// ═══════════════════════════════════════════════════════════
+
+function getCountdown() {
+  const interview = new Date('2026-03-19T09:00:00+08:00');
+  const now = new Date();
+  const diff = interview - now;
+  if(diff <= 0) return null;
+  const days = Math.floor(diff / (1000*60*60*24));
+  const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+  const mins = Math.floor((diff % (1000*60*60)) / (1000*60));
+  return {days, hours, mins, diff};
+}
+
+function countdownHTML() {
+  const c = getCountdown();
+  if(!c) return `<div class="countdown-bar"><div class="countdown-label">🎯 <b>Interview day!</b> Go get it.</div></div>`;
+  const urgency = c.days < 2 ? 'color:var(--accent2)' : '';
+  return `<div class="countdown-bar">
+    <div class="countdown-label">🗓 Interview at <b>Point72 · Thursday 9am SGT</b></div>
+    <div class="countdown-time" style="${urgency}">
+      ${c.days}<span class="countdown-unit">d</span>
+      ${c.hours}<span class="countdown-unit">h</span>
+      ${c.mins}<span class="countdown-unit">m</span>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// TOAST / CONFETTI
+// ═══════════════════════════════════════════════════════════
+
+let toastTimer = null;
+function showToast(lessonId, pts) {
+  const data = celebrationMessages[lessonId] || {emoji:'✅', title:'Nice work!', msg:'Keep going — you\'re building real skills.'};
+  document.getElementById('toast-emoji').textContent = data.emoji;
+  document.getElementById('toast-title').textContent = data.title;
+  document.getElementById('toast-msg').textContent = data.msg;
+  document.getElementById('toast-xp').textContent = `+${pts} XP`;
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  spawnConfetti();
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(hideToast, 5000);
+}
+
+function hideToast() {
+  document.getElementById('toast').classList.remove('show');
+}
+
+function spawnConfetti() {
+  const colors = ['#00d4aa','#f5a623','#4d8ef5','#a855f7','#f56b6b','#ffffff'];
+  for(let i=0;i<28;i++){
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `
+      left:${Math.random()*100}vw;
+      top:-10px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      width:${6+Math.random()*6}px;
+      height:${6+Math.random()*6}px;
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+      animation-delay:${Math.random()*0.6}s;
+      animation-duration:${1.4+Math.random()*0.8}s;
+    `;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 2400);
+  }
+}
+
+function pulseXP() {
+  const el = document.getElementById('xp-display');
+  el.classList.remove('xp-pulse');
+  void el.offsetWidth;
+  el.classList.add('xp-pulse');
+  setTimeout(()=>el.classList.remove('xp-pulse'),400);
+}
+
+// ═══════════════════════════════════════════════════════════
 // INTERACTIONS
 // ═══════════════════════════════════════════════════════════
 
@@ -849,16 +1094,15 @@ function runCode(lessonId){
   const code=document.getElementById(`editor-${lessonId}`).value.trim();
   const outEl=document.getElementById(`output-${lessonId}`);
 
-  // SQL simulated
   if(lesson.exercise.isSql){
     const res=lesson.exercise.simulatedResult;
     const blanks=(code.match(/= *\n/g)||[]).length + (code.match(/> *;/g)||[]).length + (code.match(/ON t\. = i\./g)||[]).length;
     if(blanks>0||code===lesson.exercise.starter.trim()){
       outEl.className='output-text out-error';
-      outEl.textContent='⚠ Fill in the blanks before running.';
+      outEl.textContent='⚠ Fill in the blanks before running. You\'re closer than you think!';
       return;
     }
-    let html=`<span class="out-success">✓ ${res.rows.length} row(s) returned</span>\n`;
+    let html=`<span class="out-success">✓ ${res.rows.length} row(s) returned — perfect!</span>\n`;
     html+=`<table class="out-table"><thead><tr>${res.cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;
     res.rows.forEach(r=>{html+=`<tr>${r.map(v=>`<td>${v}</td>`).join('')}</tr>`;});
     html+='</tbody></table>';
@@ -868,7 +1112,6 @@ function runCode(lessonId){
     return;
   }
 
-  // AI lessons — simulated output
   if(lesson.exercise.isAi){
     const checks=aiCheck(lessonId,code);
     if(checks.error){
@@ -881,11 +1124,10 @@ function runCode(lessonId){
     return;
   }
 
-  // Python — pattern matching
   const checks=pyCheck(lessonId,code);
   if(checks.error){
     outEl.className='output-text out-error';
-    outEl.textContent=`⚠ ${checks.error}`;
+    outEl.textContent=`⚠ ${checks.error} — almost there, keep going!`;
     return;
   }
   outEl.className='output-text';
@@ -909,34 +1151,13 @@ function simulateStream(el, text, lessonId){
 }
 
 function aiCheck(id,code){
-  if(id==='ai1'){
-    if(!code.includes('system')&&!code.toLowerCase().includes('trading')) return {error:'Add a system prompt describing the assistant role.'};
-    if(!code.includes('content')&&code.includes('""')) return {error:'Fill in both the system and user message content.'};
-  }
-  if(id==='ai2'){
-    if(!code.includes('get_pnl_summary')) return {error:'Tool name should be "get_pnl_summary".'};
-    if(!code.includes('"desk"')) return {error:'Add "desk" as a property name.'};
-    if(!code.includes('"date"')) return {error:'Add "date" as a property name.'};
-  }
-  if(id==='ai3'){
-    if(!code.includes('get_daily_pnl')) return {error:'Tool name should be "get_daily_pnl".'};
-    if(!code.includes('description')) return {error:'Add a description for the tool.'};
-  }
-  if(id==='ai4'){
-    if(!code.includes('useState')) return {error:'Use useState to define your state variables.'};
-    if(!code.includes('[]')) return {error:'messages state should initialise as an empty array [].'};
-    if(!code.includes('false')) return {error:'loading state should initialise as false.'};
-    if(!code.includes('useEffect')) return {error:'Add a useEffect hook.'};
-  }
-  if(id==='ai5'){
-    if(!code.includes('gpt-4o')) return {error:'Set the model to "gpt-4o".'};
-    if(!code.includes('system')&&code.includes('""')) return {error:'Fill in the system and user messages.'};
-  }
-  if(id==='ai6'){
-    if(!code.includes('get_pnl')) return {error:'Your agent should call get_pnl as the first action.'};
-    if(!code.includes('check_reconciliation')&&!code.includes('reconcil')) return {error:'Your agent should also call check_reconciliation.'};
-  }
-  return {};
+  if(id==='ai1'){if(!code.includes('system')&&!code.toLowerCase().includes('trading'))return{error:'Add a system prompt describing the assistant role.'};if(!code.includes('content')&&code.includes('""'))return{error:'Fill in both the system and user message content.'}}
+  if(id==='ai2'){if(!code.includes('get_pnl_summary'))return{error:'Tool name should be "get_pnl_summary".'};if(!code.includes('"desk"'))return{error:'Add "desk" as a property name.'};if(!code.includes('"date"'))return{error:'Add "date" as a property name.'}}
+  if(id==='ai3'){if(!code.includes('get_daily_pnl'))return{error:'Tool name should be "get_daily_pnl".'};if(!code.includes('description'))return{error:'Add a description for the tool.'}}
+  if(id==='ai4'){if(!code.includes('useState'))return{error:'Use useState to define your state variables.'};if(!code.includes('[]'))return{error:'messages state should initialise as an empty array [].'};if(!code.includes('false'))return{error:'loading state should initialise as false.'};if(!code.includes('useEffect'))return{error:'Add a useEffect hook.'}}
+  if(id==='ai5'){if(!code.includes('gpt-4o'))return{error:'Set the model to "gpt-4o".'};if(!code.includes('system')&&code.includes('""'))return{error:'Fill in the system and user messages.'}}
+  if(id==='ai6'){if(!code.includes('get_pnl'))return{error:'Your agent should call get_pnl as the first action.'};if(!code.includes('check_reconciliation')&&!code.includes('reconcil'))return{error:'Your agent should also call check_reconciliation.'}}
+  return{};
 }
 
 function pyCheck(id,code){
@@ -948,17 +1169,29 @@ function pyCheck(id,code){
   return{};
 }
 
-function awardXP(lessonId,pts){
+function awardXP(lessonId, pts){
   if(!completedLessons.has(lessonId)){
     completedLessons.add(lessonId);
-    xp+=pts;
-    document.getElementById('xp-display').textContent=xp;
+    xp += pts;
+    document.getElementById('xp-display').textContent = xp;
+    pulseXP();
     renderSidebar();
+    showToast(lessonId, pts);
   }
 }
 
 // INIT
 setMode('home');
+
+// Live countdown tick
+setInterval(()=>{
+  const el = document.getElementById('countdown-live');
+  if(el){
+    const c = getCountdown();
+    if(c) el.textContent = `${c.days}d ${c.hours}h ${c.mins}m`;
+  }
+}, 30000);
+
 </script>
 </body>
 </html>

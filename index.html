@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeLab — Point72 BA Prep</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080a0f;
+  --bg2: #0e1118;
+  --surface: #131620;
+  --surface2: #1a1f2e;
+  --border: #1e2435;
+  --border2: #252b3d;
+  --accent: #00d4aa;
+  --accent2: #f5a623;
+  --blue: #4d8ef5;
+  --red: #f56b6b;
+  --text: #dde2ef;
+  --text2: #8b93ab;
+  --text3: #555e78;
+  --green: #00d4aa;
+  --py: #f5a623;
+  --sql: #4d8ef5;
+  --ai: #a855f7;
+  --ai2: #c084fc;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:'Instrument Sans',sans-serif;font-size:14px;line-height:1.6}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+.app{display:grid;grid-template-rows:52px 1fr;height:100vh}
+.main{display:grid;grid-template-columns:268px 1fr;overflow:hidden}
+
+/* HEADER */
+header{
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.5rem;gap:1rem;
+}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:-0.03em;color:var(--text);display:flex;align-items:center;gap:0.5rem}
+.logo-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.header-center{display:flex;gap:0.2rem;align-items:center}
+.mode-btn{
+  padding:0.3rem 0.8rem;border-radius:5px;border:1px solid transparent;
+  cursor:pointer;font-family:'Instrument Sans',sans-serif;font-size:0.76rem;font-weight:600;
+  letter-spacing:0.03em;text-transform:uppercase;transition:all 0.15s;background:transparent;color:var(--text3);
+}
+.mode-btn.py-active{background:rgba(245,166,35,0.12);color:var(--py);border-color:rgba(245,166,35,0.25)}
+.mode-btn.sql-active{background:rgba(77,142,245,0.12);color:var(--sql);border-color:rgba(77,142,245,0.25)}
+.mode-btn.ai-active{background:rgba(168,85,247,0.12);color:var(--ai);border-color:rgba(168,85,247,0.25)}
+.mode-btn.interview-active{background:rgba(0,212,170,0.12);color:var(--accent);border-color:rgba(0,212,170,0.25)}
+.mode-btn:hover:not(.py-active):not(.sql-active):not(.ai-active):not(.interview-active){background:var(--surface);color:var(--text2)}
+.header-right{display:flex;align-items:center;gap:0.75rem}
+.xp-bar{display:flex;align-items:center;gap:0.5rem;background:var(--surface);border:1px solid var(--border);padding:0.25rem 0.75rem;border-radius:20px}
+.xp-label{font-size:0.68rem;color:var(--text3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.05em}
+.xp-val{font-size:0.78rem;color:var(--accent);font-family:'JetBrains Mono',monospace;font-weight:500}
+.streak{font-size:0.75rem;color:var(--accent2);font-family:'JetBrains Mono',monospace}
+
+/* SIDEBAR */
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:0.75rem 0}
+.sidebar-header{
+  padding:0.5rem 1.2rem 0.3rem;font-size:0.63rem;font-weight:600;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--text3);font-family:'JetBrains Mono',monospace;
+  display:flex;align-items:center;gap:0.5rem;margin-top:0.25rem;
+}
+.sidebar-header::after{content:'';flex:1;height:1px;background:var(--border)}
+.lesson-item{
+  display:flex;align-items:center;gap:0.7rem;padding:0.45rem 1.2rem;
+  cursor:pointer;transition:all 0.12s;border-left:2px solid transparent;
+}
+.lesson-item:hover{background:var(--surface);color:var(--text)}
+.lesson-item.active{background:var(--surface);color:var(--text)}
+.lesson-item.active.py-item{border-left-color:var(--py)}
+.lesson-item.active.sql-item{border-left-color:var(--sql)}
+.lesson-item.active.ai-item{border-left-color:var(--ai)}
+.lesson-item.active.int-item{border-left-color:var(--accent)}
+.lesson-icon{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-family:'JetBrains Mono',monospace;font-weight:600;flex-shrink:0}
+.py-icon{background:rgba(245,166,35,0.12);color:var(--py)}
+.sql-icon{background:rgba(77,142,245,0.12);color:var(--sql)}
+.ai-icon{background:rgba(168,85,247,0.12);color:var(--ai)}
+.int-icon{background:rgba(0,212,170,0.1);color:var(--accent)}
+.lesson-meta{flex:1;min-width:0}
+.lesson-name{font-size:0.81rem;font-weight:500;color:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lesson-sub{font-size:0.67rem;color:var(--text3);margin-top:1px}
+.lesson-status{flex-shrink:0;font-size:0.65rem}
+.status-done{color:var(--accent)}
+.status-lock{color:var(--text3)}
+.status-active{color:var(--accent2)}
+
+/* CONTENT */
+.content{display:grid;grid-template-rows:1fr;overflow:hidden}
+.lesson-view{display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
+.lesson-left{overflow-y:auto;padding:2rem;border-right:1px solid var(--border)}
+.lesson-right{display:flex;flex-direction:column;overflow:hidden}
+
+/* LESSON TYPOGRAPHY */
+.lesson-tag{display:inline-flex;align-items:center;gap:0.4rem;padding:0.2rem 0.6rem;border-radius:4px;font-size:0.63rem;font-family:'JetBrains Mono',monospace;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:1.25rem}
+.py-tag{background:rgba(245,166,35,0.12);color:var(--py);border:1px solid rgba(245,166,35,0.2)}
+.sql-tag{background:rgba(77,142,245,0.12);color:var(--sql);border:1px solid rgba(77,142,245,0.2)}
+.ai-tag{background:rgba(168,85,247,0.12);color:var(--ai);border:1px solid rgba(168,85,247,0.2)}
+.int-tag{background:rgba(0,212,170,0.12);color:var(--accent);border:1px solid rgba(0,212,170,0.2)}
+.lesson-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.45rem;line-height:1.2;letter-spacing:-0.03em;margin-bottom:0.5rem;color:var(--text)}
+.lesson-subtitle{color:var(--text2);font-size:0.84rem;margin-bottom:1.5rem;line-height:1.6}
+.concept-block{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.2rem;margin-bottom:0.9rem}
+.concept-block h3{font-size:0.72rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:0.7rem}
+.concept-block p{color:var(--text2);font-size:0.83rem;line-height:1.7}
+.concept-block p+p{margin-top:0.4rem}
+.highlight{color:var(--text);font-weight:500}
+.code-inline{font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:var(--bg);padding:0.1em 0.4em;border-radius:3px;color:var(--accent2)}
+.ai-code-inline{font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:var(--bg);padding:0.1em 0.4em;border-radius:3px;color:var(--ai2)}
+.finance-callout{background:rgba(0,212,170,0.04);border:1px solid rgba(0,212,170,0.15);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:1rem 0}
+.ai-callout{background:rgba(168,85,247,0.04);border:1px solid rgba(168,85,247,0.15);border-left:3px solid var(--ai);border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:1rem 0}
+.finance-callout .fc-label,.ai-callout .fc-label{font-size:0.63rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:0.4rem}
+.finance-callout .fc-label{color:var(--accent)}
+.ai-callout .fc-label{color:var(--ai)}
+.finance-callout p,.ai-callout p{font-size:0.82rem;color:var(--text2);line-height:1.6}
+.finance-callout p b,.ai-callout p b{color:var(--text)}
+
+/* DIAGRAM BLOCKS */
+.diagram{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1rem;margin:0.75rem 0;font-family:'JetBrains Mono',monospace;font-size:0.74rem;color:var(--text2);line-height:1.9;overflow-x:auto}
+.diagram .d-purple{color:var(--ai2)}
+.diagram .d-green{color:var(--green)}
+.diagram .d-amber{color:var(--accent2)}
+.diagram .d-blue{color:var(--blue)}
+.diagram .d-arrow{color:var(--text3)}
+
+/* EXERCISE PANEL */
+.exercise-header{padding:0.9rem 1.25rem;border-bottom:1px solid var(--border);background:var(--bg2);display:flex;align-items:center;justify-content:space-between}
+.ex-title{font-size:0.8rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:0.5rem}
+.ex-badge{font-size:0.6rem;font-family:'JetBrains Mono',monospace;background:var(--surface2);color:var(--text3);padding:0.15rem 0.5rem;border-radius:3px}
+.difficulty{font-size:0.7rem;display:flex;gap:0.2rem;align-items:center}
+.diff-pip{width:8px;height:8px;border-radius:2px;background:var(--border2)}
+.exercise-prompt{padding:0.9rem 1.25rem;border-bottom:1px solid var(--border);background:var(--surface);font-size:0.81rem;color:var(--text2);line-height:1.6}
+.exercise-prompt strong{color:var(--text)}
+.editor-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.editor-toolbar{padding:0.5rem 1rem;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.editor-lang{font-size:0.63rem;color:var(--text3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.08em}
+.btn-run{padding:0.32rem 0.9rem;border-radius:5px;border:none;cursor:pointer;font-family:'Instrument Sans',sans-serif;font-size:0.76rem;font-weight:600;transition:all 0.15s;display:flex;align-items:center;gap:0.4rem}
+.btn-run.py{background:rgba(245,166,35,0.15);color:var(--py)}
+.btn-run.sql{background:rgba(77,142,245,0.15);color:var(--sql)}
+.btn-run.ai{background:rgba(168,85,247,0.15);color:var(--ai)}
+.btn-run:hover{filter:brightness(1.2);transform:translateY(-1px)}
+.btn-run:active{transform:translateY(0)}
+.code-editor{flex:1;width:100%;background:var(--bg);border:none;outline:none;resize:none;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--text);padding:0.9rem 1.25rem;line-height:1.8}
+.output-panel{height:130px;border-top:1px solid var(--border);background:var(--bg);overflow-y:auto;padding:0.7rem 1.25rem}
+.output-label{font-size:0.6rem;color:var(--text3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem}
+.output-text{font-family:'JetBrains Mono',monospace;font-size:0.77rem;line-height:1.7;white-space:pre-wrap}
+.out-success{color:var(--green)}
+.out-error{color:var(--red)}
+.out-info{color:var(--text2)}
+.out-ai{color:var(--ai2)}
+.out-table{border-collapse:collapse;margin-top:0.5rem;font-size:0.74rem}
+.out-table th{padding:0.22rem 0.7rem;text-align:left;color:var(--text3);border-bottom:1px solid var(--border2);font-weight:500;font-family:'JetBrains Mono',monospace;font-size:0.66rem;text-transform:uppercase;letter-spacing:0.05em}
+.out-table td{padding:0.18rem 0.7rem;color:var(--text2);border-bottom:1px solid rgba(30,36,53,0.5)}
+.out-table tr:last-child td{border-bottom:none}
+
+/* INTERVIEW */
+.interview-view{overflow-y:auto;padding:2rem;display:grid;gap:1rem;grid-template-columns:1fr 1fr;align-content:start}
+.int-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.2rem;cursor:pointer;transition:all 0.15s}
+.int-card:hover{border-color:var(--border2);background:var(--surface2);transform:translateY(-1px)}
+.int-card.open{border-color:rgba(0,212,170,0.3)}
+.int-q{font-size:0.84rem;font-weight:600;color:var(--text);margin-bottom:0.5rem;line-height:1.4}
+.int-tags{display:flex;gap:0.3rem;flex-wrap:wrap;margin-bottom:0.7rem}
+.int-tag-pill{font-size:0.6rem;padding:0.15rem 0.5rem;border-radius:3px;font-family:'JetBrains Mono',monospace;font-weight:500}
+.tag-sql{background:rgba(77,142,245,0.12);color:var(--sql)}
+.tag-py{background:rgba(245,166,35,0.12);color:var(--py)}
+.tag-ai{background:rgba(168,85,247,0.12);color:var(--ai)}
+.tag-biz{background:rgba(0,212,170,0.1);color:var(--accent)}
+.tag-mkt{background:rgba(245,107,107,0.12);color:var(--red)}
+.int-answer{display:none;font-size:0.79rem;color:var(--text2);line-height:1.7;border-top:1px solid var(--border);padding-top:0.75rem;margin-top:0.75rem}
+.int-card.open .int-answer{display:block}
+.int-answer code{font-family:'JetBrains Mono',monospace;font-size:0.77rem;color:var(--accent2)}
+.int-answer b{color:var(--text)}
+.int-answer pre{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:0.75rem;margin:0.5rem 0;font-family:'JetBrains Mono',monospace;font-size:0.73rem;color:var(--text);overflow-x:auto;line-height:1.7}
+
+/* DASHBOARD */
+.dash-view{overflow-y:auto;padding:2rem;display:grid;gap:1.2rem;align-content:start}
+.dash-hero{background:linear-gradient(135deg,rgba(0,212,170,0.07),rgba(168,85,247,0.04));border:1px solid rgba(0,212,170,0.15);border-radius:12px;padding:1.75rem;position:relative;overflow:hidden}
+.dash-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(168,85,247,0.06),transparent 70%);border-radius:50%}
+.dash-hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.55rem;letter-spacing:-0.04em;color:var(--text);margin-bottom:0.35rem}
+.dash-hero h1 em{color:var(--accent);font-style:normal}
+.dash-hero p{color:var(--text2);font-size:0.84rem;max-width:500px;line-height:1.6}
+.dash-target{margin-top:1rem;padding:0.7rem 1rem;background:rgba(0,0,0,0.3);border-radius:8px;display:flex;align-items:center;gap:0.75rem}
+.target-logo{width:32px;height:32px;border-radius:6px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:0.62rem;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);border:1px solid var(--border2)}
+.target-text{font-size:0.79rem;color:var(--text2)}
+.target-text b{color:var(--text);display:block;font-size:0.84rem;margin-bottom:0.1rem}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0.9rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem;text-align:center}
+.stat-val{font-family:'Syne',sans-serif;font-weight:700;font-size:1.7rem;letter-spacing:-0.04em;margin-bottom:0.15rem}
+.stat-val.green{color:var(--green)}
+.stat-val.amber{color:var(--accent2)}
+.stat-val.blue{color:var(--blue)}
+.stat-val.purple{color:var(--ai)}
+.stat-label{font-size:0.67rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;font-family:'JetBrains Mono',monospace}
+.dash-tracks{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+.track-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.2rem;cursor:pointer;transition:all 0.15s}
+.track-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.track-icon{font-size:1.4rem;margin-bottom:0.7rem}
+.track-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;letter-spacing:-0.02em;margin-bottom:0.25rem}
+.track-desc{font-size:0.76rem;color:var(--text2);line-height:1.5;margin-bottom:0.7rem}
+.track-progress-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:0.35rem}
+.track-fill{height:100%;border-radius:2px;transition:width 0.5s ease}
+.fill-py{background:var(--py)}
+.fill-sql{background:var(--sql)}
+.fill-ai{background:var(--ai)}
+.fill-int{background:var(--accent)}
+.track-pct{font-size:0.68rem;color:var(--text3);font-family:'JetBrains Mono',monospace}
+.next-up{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.2rem;grid-column:1/-1}
+.next-up h3{font-size:0.67rem;color:var(--text3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.7rem}
+.next-items{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem}
+.next-item{display:flex;align-items:center;gap:0.7rem;padding:0.55rem;border-radius:6px;cursor:pointer;transition:background 0.1s}
+.next-item:hover{background:var(--surface2)}
+.next-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.62rem;font-family:'JetBrains Mono',monospace;font-weight:500;flex-shrink:0}
+.next-num.py{background:rgba(245,166,35,0.15);color:var(--py)}
+.next-num.sql{background:rgba(77,142,245,0.15);color:var(--sql)}
+.next-num.ai{background:rgba(168,85,247,0.15);color:var(--ai)}
+.next-info{flex:1}
+.next-name{font-size:0.8rem;font-weight:500;color:var(--text)}
+.next-track{font-size:0.68rem;color:var(--text3);margin-top:1px}
+.next-arrow{color:var(--text3);font-size:0.75rem}
+
+.hidden{display:none!important}
+.fade-in{animation:fadeIn 0.2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.hint-btn{padding:0.28rem 0.7rem;border-radius:5px;border:1px solid var(--border2);cursor:pointer;font-family:'Instrument Sans',sans-serif;font-size:0.73rem;background:transparent;color:var(--text3);transition:all 0.15s}
+.hint-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,212,170,0.05)}
+.hint-box{padding:0.7rem 1.25rem;border-top:1px solid var(--border);background:rgba(0,212,170,0.04);font-size:0.77rem;color:var(--text2);line-height:1.6;display:none}
+.hint-box.visible{display:block}
+.hint-box b{color:var(--accent)}
+.ai-badge{display:inline-flex;align-items:center;gap:0.3rem;font-size:0.65rem;font-family:'JetBrains Mono',monospace;color:var(--ai);background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.2);padding:0.15rem 0.5rem;border-radius:3px;margin-left:0.4rem}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HEADER -->
+<header>
+  <div class="logo"><div class="logo-dot"></div>CodeLab</div>
+  <div class="header-center">
+    <button class="mode-btn" onclick="setMode('home')">Home</button>
+    <button class="mode-btn" onclick="setMode('python')">Python</button>
+    <button class="mode-btn" onclick="setMode('sql')">SQL</button>
+    <button class="mode-btn" onclick="setMode('ai')">AI Engineering</button>
+    <button class="mode-btn" onclick="setMode('interview')">Interview Prep</button>
+  </div>
+  <div class="header-right">
+    <span class="streak">🔥 3-day streak</span>
+    <div class="xp-bar">
+      <span class="xp-label">XP</span>
+      <span class="xp-val" id="xp-display">240</span>
+    </div>
+  </div>
+</header>
+
+<div class="main">
+  <div class="sidebar" id="sidebar"></div>
+  <div class="content" id="content-area"></div>
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// CURRICULUM DATA
+// ═══════════════════════════════════════════════════════════
+
+const curriculum = {
+
+python: [
+  {
+    id:'py1',label:'PY',type:'py',status:'done',
+    name:'Variables & Types',sub:'int, float, str, bool',
+    tag:'Python · Basics',title:'Variables & Data Types',
+    subtitle:'Every piece of data in Python has a type. In finance you\'ll work with prices (float), instrument names (str), quantities (int), and flags (bool) constantly.',
+    concepts:[
+      {h:'What is a variable?',p:'A variable is a named container for a value. Think of it like a Bloomberg field: <span class="code-inline">PX_LAST</span> holds the last price. In Python: <span class="code-inline">px_last = 142.50</span>.'},
+      {h:'The four primitive types',p:'<span class="highlight">int</span> — whole numbers (share qty, days to expiry)<br><span class="highlight">float</span> — decimals (price, rate, PnL)<br><span class="highlight">str</span> — text (ticker, currency pair "AUDUSD")<br><span class="highlight">bool</span> — True/False (is_active, has_crossed_limit)'}
+    ],
+    callout:{label:'Finance Context',text:'At <b>Point72/Cubist</b>, every trading system stores instrument metadata. A futures contract might have: <b>ticker="ESH25"</b> (str), <b>price=5204.25</b> (float), <b>contracts=50</b> (int), <b>is_hedged=True</b> (bool).'},
+    exercise:{
+      title:'Exercise 1 — Define a Trade',badge:'Variables',diff:1,
+      prompt:'A futures trade just came in: 20 contracts of ESH25 at 5204.25. Mark it active.\n\nDefine 4 variables: <strong>ticker</strong>, <strong>price</strong>, <strong>contracts</strong>, <strong>is_active</strong>. Then print them.',
+      starter:`ticker = \nprice = \ncontracts = \nis_active = \n\nprint("Ticker:", ticker)\nprint("Price:", price)\nprint("Contracts:", contracts)\nprint("Active:", is_active)`,
+      hint:'<b>ticker</b> needs quotes (string). <b>price</b> is a float. <b>contracts</b> is int. <b>is_active</b> is True (capital T, no quotes).',
+      expectedOutput:`Ticker: ESH25\nPrice: 5204.25\nContracts: 20\nActive: True`
+    }
+  },
+  {
+    id:'py2',label:'PY',type:'py',status:'active',
+    name:'Lists & Dicts',sub:'Collections of data',
+    tag:'Python · Data Structures',title:'Lists & Dictionaries',
+    subtitle:'Real trading data is never a single value. You\'ll read portfolios (lists), trade records (dicts), and map instruments to metadata constantly.',
+    concepts:[
+      {h:'Lists — ordered collections',p:'A <span class="highlight">list</span> holds multiple items in order. <span class="code-inline">portfolio = ["AAPL","MSFT","NVDA"]</span>. Access by index: <span class="code-inline">portfolio[0]</span> → "AAPL".'},
+      {h:'Dictionaries — key-value pairs',p:'A <span class="highlight">dict</span> maps a key to a value — like a DB row. <span class="code-inline">trade = {"ticker":"ESH25","qty":50,"price":5204.25}</span>. Access with <span class="code-inline">trade["ticker"]</span>.'}
+    ],
+    callout:{label:'Point72 Context',text:'Systematic desks pass trade metadata around as Python dicts before sending orders to execution. A BA analyst writes scripts that read a list of trade dicts and check for missing fields or anomalies.'},
+    exercise:{
+      title:'Exercise 2 — Portfolio Builder',badge:'Lists & Dicts',diff:1,
+      prompt:'1. Create <strong>positions</strong> list with: "AAPL", "NVDA", "TSLA"\n2. Create <strong>trade</strong> dict: ticker="NVDA", qty=100, price=875.50, desk="Quant Equity"\n3. Print the second ticker\n4. Print the desk',
+      starter:`positions = \n\ntrade = \n\nprint("Second position:", )\nprint("Desk:", )`,
+      hint:'Lists: <b>["a","b","c"]</b>. Dicts: <b>{"key": value}</b>. Access: <b>list[1]</b>, <b>dict["key"]</b>.',
+      expectedOutput:`Second position: NVDA\nDesk: Quant Equity`
+    }
+  },
+  {
+    id:'py3',label:'PY',type:'py',status:'locked',
+    name:'Loops & Logic',sub:'if/else, for, while',
+    tag:'Python · Control Flow',title:'Loops & Conditional Logic',
+    subtitle:'Automation is the point. Loops process 10,000 trades as easily as 1. Conditionals let your code make decisions — the core of any trading rule.',
+    concepts:[
+      {h:'For loops — iterate over data',p:'<span class="code-inline">for trade in trades: print(trade["ticker"])</span> prints every ticker in your list.'},
+      {h:'If / elif / else',p:'<span class="code-inline">if pnl > 0: print("Profitable")</span>. Add <span class="code-inline">elif</span> for more conditions, <span class="code-inline">else</span> for the fallback.'}
+    ],
+    callout:{label:'BA Role Context',text:'A senior BA at <b>Point72</b> writes a daily reconciliation script: loop through broker-reported trades, check if each matches internal records, flag mismatches. That is literally a <b>for loop + if/else</b>.'},
+    exercise:{
+      title:'Exercise 3 — PnL Screener',badge:'Loops',diff:2,
+      prompt:'Loop through pnl_list. Print "PROFIT" if > 0, "FLAT" if == 0, "LOSS" if negative.',
+      starter:`pnl_list = [12500, -3200, 0, 8750, -150]\n\nfor pnl in pnl_list:\n    if :\n        print(pnl, "→ PROFIT")\n    elif :\n        print(pnl, "→ FLAT")\n    else:\n        print(pnl, "→ LOSS")`,
+      hint:'<b>if pnl > 0</b>. Then <b>elif pnl == 0</b> (double equals for comparison).',
+      expectedOutput:`12500 → PROFIT\n-3200 → LOSS\n0 → FLAT\n8750 → PROFIT\n-150 → LOSS`
+    }
+  },
+  {
+    id:'py4',label:'PY',type:'py',status:'locked',
+    name:'Functions',sub:'def, return, args',
+    tag:'Python · Functions',title:'Writing Functions',
+    subtitle:'Functions package logic for reuse. In a trading firm you\'ll write functions that calculate metrics, validate data, and transform records across the entire codebase.',
+    concepts:[
+      {h:'Defining a function',p:'<span class="code-inline">def calc_pnl(entry, exit, qty): return (exit - entry) * qty</span>. <span class="highlight">def</span> declares it, parameters are inputs, <span class="highlight">return</span> is the output.'},
+      {h:'DRY principle',p:'If your PnL formula lives in one function, you only need to fix it in one place. <span class="highlight">Don\'t Repeat Yourself</span> — essential for maintaining trade systems at scale.'}
+    ],
+    callout:{label:'Cubist/Point72 Context',text:'At systematic desks, analysts write <b>utility functions</b> imported across the entire codebase. A function like <b>is_valid_trade(trade_dict)</b> might be called thousands of times per day in production.'},
+    exercise:{
+      title:'Exercise 4 — Notional Calculator',badge:'Functions',diff:2,
+      prompt:'Write <strong>calc_notional(price, quantity)</strong> that returns price × quantity.\n\nCall it for: ESH25 at 5204.25 × 20, and AAPL at 182.50 × 500.',
+      starter:`def calc_notional(price, quantity):\n    return \n\nesm_notional = calc_notional(5204.25, 20)\naapl_notional = calc_notional(182.50, 500)\n\nprint(f"ESH25 notional: \${esm_notional:,.2f}")\nprint(f"AAPL notional: \${aapl_notional:,.2f}")`,
+      hint:'Function body: <b>return price * quantity</b>.',
+      expectedOutput:`ESH25 notional: $104,085.00\nAAPL notional: $91,250.00`
+    }
+  },
+  {
+    id:'py5',label:'PY',type:'py',status:'locked',
+    name:'Pandas Basics',sub:'DataFrames for finance',
+    tag:'Python · Pandas',title:'Pandas — Finance Data in Tables',
+    subtitle:'Pandas is the most important Python library for any finance analyst. It reads CSVs, filters data, groups by desk, and computes summary stats — all in a few lines.',
+    concepts:[
+      {h:'DataFrame — a table in Python',p:'A <span class="highlight">DataFrame</span> is a table with rows and columns, like Excel or a SQL result. <span class="code-inline">import pandas as pd</span>, then <span class="code-inline">df = pd.DataFrame(data)</span>.'},
+      {h:'Key operations',p:'<span class="code-inline">df["column"]</span> selects a column. <span class="code-inline">df[df["pnl"] > 0]</span> filters rows. <span class="code-inline">df.groupby("desk")["pnl"].sum()</span> aggregates — critical for reporting.'}
+    ],
+    callout:{label:'Why This Matters',text:'Knowing Pandas means you can quickly slice trade blotters, aggregate PnL by strategy, detect outliers, and present clean summaries to PMs — without needing a data engineer.'},
+    exercise:{
+      title:'Exercise 5 — Trade Blotter Analysis',badge:'Pandas',diff:3,
+      prompt:'Filter for profitable trades, then calculate total PnL per desk.',
+      starter:`import pandas as pd\n\ntrades = pd.DataFrame({\n    "ticker": ["AAPL","NVDA","MSFT","TSLA","AMZN"],\n    "desk":   ["Quant Eq","Quant Eq","Macro","Quant Eq","Macro"],\n    "pnl":    [8500, -1200, 4300, -800, 6100]\n})\n\nprofitable = trades[trades["pnl"] > ]\nprint("Profitable trades:")\nprint(profitable)\n\ndesk_pnl = trades.groupby("")["pnl"].sum()\nprint("\\nPnL by desk:")\nprint(desk_pnl)`,
+      hint:'Filter: <b>trades["pnl"] > 0</b>. Groupby: fill in <b>"desk"</b>.',
+      expectedOutput:`Profitable trades:\n  ticker      desk   pnl\n0   AAPL  Quant Eq  8500\n2   MSFT     Macro  4300\n4   AMZN     Macro  6100\n\nPnL by desk:\ndesk\nMacro      10400\nQuant Eq    6500`
+    }
+  }
+],
+
+sql: [
+  {
+    id:'sql1',label:'SQL',type:'sql',status:'active',
+    name:'SELECT Basics',sub:'Your first query',
+    tag:'SQL · Foundations',title:'SELECT — Reading from a Database',
+    subtitle:'SQL reads and writes data in relational databases. As a BA at Point72, you\'ll query trade databases, position tables, and market data stores every single day.',
+    concepts:[
+      {h:'What is SQL?',p:'SQL (Structured Query Language) interacts with relational databases — think multiple Excel sheets that can link to each other. <span class="highlight">SELECT</span> is how you read data.'},
+      {h:'Basic SELECT syntax',p:'<span class="code-inline">SELECT column1, column2 FROM table_name;</span><br>Or everything: <span class="code-inline">SELECT * FROM trades;</span>'}
+    ],
+    callout:{label:'Point72 / Cubist Reality',text:'Systematic desks store <b>every trade, position, and risk metric</b> in SQL databases. A BA writes queries to reconcile broker data, pull daily PnL, check open positions, and generate compliance reports.'},
+    exercise:{
+      title:'Exercise 1 — Your First Query',badge:'SELECT',diff:1,
+      prompt:'You have a <strong>trades</strong> table: id, ticker, quantity, price, desk.\n\nWrite a query to select ALL columns.',
+      starter:`SELECT \nFROM trades;`,
+      hint:'Use <b>*</b> to select all columns: <b>SELECT * FROM trades;</b>',
+      isSql:true,
+      simulatedResult:{cols:['id','ticker','quantity','price','desk'],rows:[[1,'ESH25',20,5204.25,'Quant Macro'],[2,'AAPL',500,182.50,'Quant Equity'],[3,'NVDA',200,875.50,'Quant Equity'],[4,'GBP/USD',1000000,1.2750,'FX'],[5,'CL1',30,78.40,'Commodities']]}
+    }
+  },
+  {
+    id:'sql2',label:'SQL',type:'sql',status:'locked',
+    name:'WHERE Filtering',sub:'Find specific rows',
+    tag:'SQL · Filtering',title:'WHERE — Filtering Rows',
+    subtitle:'SELECT * gives you everything. WHERE narrows it down. In trading ops you\'re almost always asking for a specific subset: today\'s trades, one desk, records above a threshold.',
+    concepts:[
+      {h:'WHERE syntax',p:'<span class="code-inline">SELECT * FROM trades WHERE desk = \'Quant Equity\';</span><br>Combine: <span class="code-inline">WHERE price > 100 AND qty > 50</span>. Text matching: <span class="code-inline">LIKE \'ES%\'</span>.'},
+      {h:'Comparison operators',p:'<span class="code-inline">= != > < >= <=</span> all work. <span class="code-inline">IN (\'AAPL\', \'NVDA\')</span> matches a list.'}
+    ],
+    callout:{label:'Real Use Case',text:'A BA at <b>Cubist</b> might run: <b>SELECT * FROM trades WHERE desk = \'Quant Equity\' AND trade_date = \'2025-01-15\'</b> to pull all equity trades on a specific date for a compliance review.'},
+    exercise:{
+      title:'Exercise 2 — Desk Filter',badge:'WHERE',diff:1,
+      prompt:'Select only trades from the "Quant Equity" desk with price > 150.',
+      starter:`SELECT * \nFROM trades \nWHERE desk = \n  AND price > ;`,
+      hint:'String values need single quotes: <b>\'Quant Equity\'</b>. Numbers don\'t: <b>price > 150</b>.',
+      isSql:true,
+      simulatedResult:{cols:['id','ticker','quantity','price','desk'],rows:[[2,'AAPL',500,182.50,'Quant Equity'],[3,'NVDA',200,875.50,'Quant Equity']]}
+    }
+  },
+  {
+    id:'sql3',label:'SQL',type:'sql',status:'locked',
+    name:'GROUP BY & Aggregation',sub:'SUM, COUNT, AVG',
+    tag:'SQL · Aggregation',title:'GROUP BY — Summarising Data',
+    subtitle:'Aggregation turns thousands of rows into insight. As a BA you\'ll produce daily summaries: PnL by desk, trade count by strategy, average price by instrument.',
+    concepts:[
+      {h:'Aggregate functions',p:'<span class="code-inline">COUNT(*)</span> — row count<br><span class="code-inline">SUM(col)</span> — total<br><span class="code-inline">AVG(col)</span> — mean<br><span class="code-inline">MAX/MIN</span> — extremes'},
+      {h:'GROUP BY + HAVING',p:'<span class="code-inline">SELECT desk, SUM(pnl) FROM trades GROUP BY desk;</span><br>Add <span class="code-inline">HAVING SUM(pnl) > 0</span> to filter the aggregated groups.'}
+    ],
+    callout:{label:'Interview Likely Question',text:'"Write a SQL query to find total PnL by strategy, only profitable ones." This is a classic BA/analyst SQL interview question — GROUP BY + HAVING. This exact pattern appears in Point72 technical screens.'},
+    exercise:{
+      title:'Exercise 3 — PnL Report by Desk',badge:'GROUP BY',diff:2,
+      prompt:'From pnl_daily (desk, strategy, pnl): calculate total PnL per desk. Show only desks > $5,000.',
+      starter:`SELECT desk, SUM(pnl) AS total_pnl\nFROM pnl_daily\nGROUP BY \nHAVING SUM(pnl) > ;`,
+      hint:'GROUP BY needs same column as SELECT non-aggregate: <b>GROUP BY desk</b>. HAVING filters aggregated results.',
+      isSql:true,
+      simulatedResult:{cols:['desk','total_pnl'],rows:[['Quant Equity',47200],['Macro',18500]]}
+    }
+  },
+  {
+    id:'sql4',label:'SQL',type:'sql',status:'locked',
+    name:'JOINs',sub:'Linking tables together',
+    tag:'SQL · Joins',title:'JOIN — Combining Tables',
+    subtitle:'The real power of SQL is linking tables. A trades table has ticker IDs; an instruments table has sector details. JOIN connects them — essential for any reporting query.',
+    concepts:[
+      {h:'INNER JOIN',p:'<span class="code-inline">SELECT t.ticker, i.sector FROM trades t INNER JOIN instruments i ON t.ticker = i.ticker;</span><br>Only returns rows where ticker exists in BOTH tables.'},
+      {h:'LEFT JOIN',p:'<span class="code-inline">LEFT JOIN</span> keeps all rows from the left table, filling NULL where the right has no match. Use for auditing — "show all trades, even if metadata is missing."'}
+    ],
+    callout:{label:'Point72 Application',text:'You\'d JOIN a <b>trades</b> table with a <b>counterparty</b> table to get broker names, or JOIN with a <b>positions</b> table to reconcile executions against EOD positions. JOINs are the most tested SQL concept in finance interviews.'},
+    exercise:{
+      title:'Exercise 4 — Enrich Trade Data',badge:'JOIN',diff:3,
+      prompt:'JOIN trades with instruments (on ticker) to show ticker, quantity, and sector.',
+      starter:`SELECT t.ticker, t.quantity, i.sector\nFROM trades t\nINNER JOIN instruments i\n  ON t. = i. ;`,
+      hint:'Both tables have <b>ticker</b>. ON clause: <b>t.ticker = i.ticker</b>.',
+      isSql:true,
+      simulatedResult:{cols:['ticker','quantity','sector'],rows:[['AAPL',500,'Technology'],['NVDA',200,'Semiconductors'],['ESH25',20,'Futures - Equity'],['CL1',30,'Commodities - Energy']]}
+    }
+  }
+],
+
+ai: [
+  {
+    id:'ai1',label:'AI',type:'ai',status:'active',
+    name:'LLMs & Prompting',sub:'How AI models work',
+    tag:'AI · Foundations',title:'LLMs — What They Are & How to Talk to Them',
+    subtitle:'Large Language Models (LLMs) like Claude and GPT-4 are transformer-based neural networks trained on text. Knowing how to work with them is rapidly becoming a core technical skill — even for BA roles at quant funds.',
+    concepts:[
+      {h:'What is an LLM?',p:'An LLM is a <span class="highlight">probability machine</span> — at each step it predicts the most likely next token given all previous context. Models like <span class="code-inline">claude-sonnet-4</span>, <span class="code-inline">gpt-4o</span>, and <span class="code-inline">gemini-1.5-pro</span> are accessed via <span class="highlight">APIs</span>, not downloaded locally.'},
+      {h:'Prompting fundamentals',p:'A <span class="highlight">prompt</span> is your instruction to the model. The quality of your output depends on:<br><span class="highlight">System prompt</span> — defines role/context<br><span class="highlight">User message</span> — your actual request<br><span class="highlight">Temperature</span> — 0 = deterministic, 1 = creative<br><span class="highlight">Max tokens</span> — maximum response length'},
+      {h:'Roles in a conversation',p:'API calls use a <span class="code-inline">messages</span> array with roles: <span class="code-inline">system</span> (background instructions), <span class="code-inline">user</span> (your input), <span class="code-inline">assistant</span> (model\'s reply). Multi-turn conversations are built by passing the full message history each time.'}
+    ],
+    callout:{label:'Why AI Matters for BA Roles',text:'Quant firms like <b>Point72, Two Sigma, and Citadel</b> are integrating LLMs into their ops workflows — automating report drafting, trade narrative generation, compliance Q&A, and data extraction from unstructured documents. A BA who understands AI APIs stands out significantly.'},
+    exercise:{
+      title:'Exercise 1 — First API Call Anatomy',badge:'Prompting',diff:1,isAi:true,
+      prompt:'Below is a Python snippet calling the Claude API. Fill in:\n1. The <strong>system</strong> prompt: "You are a trading operations assistant."\n2. The <strong>user</strong> message: "Summarise what broker reconciliation means in 2 sentences."',
+      starter:`import anthropic\n\nclient = anthropic.Anthropic()\n\nresponse = client.messages.create(\n    model="claude-opus-4-5",\n    max_tokens=256,\n    system="",  # ← fill this in\n    messages=[\n        {"role": "user", "content": ""}  # ← fill this in\n    ]\n)\n\nprint(response.content[0].text)`,
+      hint:'The <b>system</b> param is a plain string. The <b>content</b> inside messages is also a string — your question to the model.',
+      simulatedAiOutput:`✓ API call structure correct!\n\n[Simulated Claude response]\nBroker reconciliation is the process of comparing a firm's internal trade records against the broker's reported confirmations to identify and resolve any discrepancies. Mismatches can indicate execution errors, data feed issues, or booking mistakes that must be resolved before settlement.`
+    }
+  },
+  {
+    id:'ai2',label:'AI',type:'ai',status:'locked',
+    name:'Claude API Deep-Dive',sub:'Messages, tools, streaming',
+    tag:'AI · Claude API',title:'Claude API — Messages, Tools & Streaming',
+    subtitle:'Anthropic\'s Claude API is one of the most capable LLM APIs available. Understanding its structure — messages format, tool use, and streaming — lets you build serious AI-powered applications.',
+    concepts:[
+      {h:'The Messages API',p:'Every call to <span class="code-inline">client.messages.create()</span> takes: <span class="code-inline">model</span>, <span class="code-inline">max_tokens</span>, <span class="code-inline">messages[]</span>, and optional <span class="code-inline">system</span>. The response has a <span class="code-inline">content</span> array with <span class="code-inline">TextBlock</span> or <span class="code-inline">ToolUseBlock</span> items.'},
+      {h:'Tool use (function calling)',p:'You can give Claude <span class="highlight">tools</span> — structured functions it can choose to call. Define a tool with a name, description, and JSON schema for its inputs. Claude decides when to call it based on context. This is how you build AI agents that interact with real systems.'},
+      {h:'Streaming',p:'For long responses, use <span class="code-inline">client.messages.stream()</span> to receive tokens as they\'re generated — like watching Claude type in real time. Essential for any chat interface where latency matters.'}
+    ],
+    callout:{label:'Practical Build',text:'A BA at a quant fund might build a <b>trade narrative generator</b>: feed in daily PnL data, ask Claude to write a PM report in plain English. With streaming, the output appears word-by-word in a dashboard — far better UX than waiting 10 seconds for a response.'},
+    exercise:{
+      title:'Exercise 2 — Define a Tool',badge:'Tool Use',diff:2,isAi:true,
+      prompt:'Define a Claude tool called <strong>get_pnl_summary</strong> that takes two inputs:\n- <strong>desk</strong> (string): the trading desk name\n- <strong>date</strong> (string): the trade date in YYYY-MM-DD format',
+      starter:`tool_definition = {\n    "name": "",          # ← tool name\n    "description": "Retrieve the daily PnL summary for a given desk and date.",\n    "input_schema": {\n        "type": "object",\n        "properties": {\n            "": {              # ← first parameter name\n                "type": "string",\n                "description": "The trading desk (e.g. Quant Equity)"\n            },\n            "": {             # ← second parameter name\n                "type": "string",\n                "description": "Trade date in YYYY-MM-DD format"\n            }\n        },\n        "required": ["desk", "date"]\n    }\n}\n\nprint("Tool defined:", tool_definition["name"])`,
+      hint:'Fill in the <b>"name"</b> as <b>"get_pnl_summary"</b>. The two property keys should be <b>"desk"</b> and <b>"date"</b>.',
+      simulatedAiOutput:`✓ Tool definition valid!\n\nTool name: get_pnl_summary\nParameters: desk (string), date (string)\nRequired: ['desk', 'date']\n\nClaude will choose to call this tool when a user asks\nfor PnL data for a specific desk and date.`
+    }
+  },
+  {
+    id:'ai3',label:'AI',type:'ai',status:'locked',
+    name:'MCP Protocol',sub:'Model Context Protocol',
+    tag:'AI · MCP',title:'MCP — Model Context Protocol',
+    subtitle:'MCP (Model Context Protocol) is an open standard by Anthropic that lets AI models like Claude connect to external tools, databases, and services in a standardised way. Think of it as USB-C for AI integrations.',
+    concepts:[
+      {h:'What problem does MCP solve?',p:'Before MCP, every AI integration was custom — you\'d write bespoke code to connect Claude to your database, Slack, Bloomberg, etc. MCP standardises how <span class="highlight">hosts</span> (AI apps) connect to <span class="highlight">servers</span> (data/tool providers). Build the server once; any MCP-compatible AI can use it.'},
+      {h:'MCP Architecture',p:'<span class="highlight">MCP Host</span>: the AI application (Claude Desktop, your custom app)<br><span class="highlight">MCP Server</span>: exposes tools/data (a Python server you write)<br><span class="highlight">Transport</span>: stdio (local) or HTTP+SSE (remote)<br><span class="highlight">Primitives</span>: <span class="ai-code-inline">tools</span> (callable functions), <span class="ai-code-inline">resources</span> (data files/feeds), <span class="ai-code-inline">prompts</span> (reusable templates)'},
+      {h:'MCP Servers in finance',p:'Imagine an MCP server that wraps your firm\'s trade database. Any AI tool — Claude Desktop, a custom chatbot, an agentic workflow — can query live positions and PnL without each needing custom integration code. <span class="highlight">Write once, use everywhere.</span>'}
+    ],
+    callout:{label:'Architecture Diagram',isHtml:true,text:`<div class="diagram">
+<span class="d-purple">[ Claude / LLM Host ]</span>
+        <span class="d-arrow">│  MCP Client</span>
+        <span class="d-arrow">│  (stdio / HTTP+SSE)</span>
+        <span class="d-arrow">▼</span>
+<span class="d-green">[ MCP Server ]</span>  ←── your Python server
+   <span class="d-amber">├── tools:</span>      get_pnl(), query_trades(), send_alert()
+   <span class="d-blue">├── resources:</span>  live_positions.json, market_data/
+   <span class="d-amber">└── prompts:</span>    daily_report_template
+        <span class="d-arrow">│</span>
+        <span class="d-arrow">▼</span>
+<span class="d-green">[ Your Systems ]</span>
+   ├── Trade DB (PostgreSQL)
+   ├── Bloomberg feed
+   └── Slack / email
+</div>`},
+    exercise:{
+      title:'Exercise 3 — Read an MCP Server',badge:'MCP',diff:2,isAi:true,
+      prompt:'Below is a minimal MCP server skeleton using the Python MCP SDK. Fill in the <strong>tool name</strong> and its <strong>description</strong> for a tool that queries daily PnL.',
+      starter:`from mcp.server import Server\nfrom mcp.server.models import InitializationOptions\nimport mcp.types as types\n\napp = Server("trading-ops-server")\n\n@app.list_tools()\nasync def list_tools() -> list[types.Tool]:\n    return [\n        types.Tool(\n            name="",           # ← tool name\n            description="",    # ← what it does\n            inputSchema={\n                "type": "object",\n                "properties": {\n                    "desk": {"type": "string"},\n                    "date": {"type": "string"}\n                },\n                "required": ["desk", "date"]\n            }\n        )\n    ]\n\n# When Claude calls this tool:\n@app.call_tool()\nasync def call_tool(name: str, arguments: dict):\n    if name == "get_daily_pnl":\n        desk = arguments["desk"]\n        date = arguments["date"]\n        # → query your DB here\n        return [types.TextContent(type="text",\n            text=f"PnL for {desk} on {date}: $142,500")]\n\nprint("MCP Server defined!")`,
+      hint:'Name: <b>"get_daily_pnl"</b>. Description: something like <b>"Returns the daily PnL for a given trading desk and date."</b>',
+      simulatedAiOutput:`✓ MCP Server structure valid!\n\nServer name: trading-ops-server\nTool registered: get_daily_pnl\nTransport: stdio (default)\n\nClaude Desktop can now connect to this server\nand call get_daily_pnl(desk, date) as a native tool.\nNo custom integration code needed on the host side.`
+    }
+  },
+  {
+    id:'ai4',label:'AI',type:'ai',status:'locked',
+    name:'React Hooks & AI UI',sub:'useState, useEffect, streaming',
+    tag:'AI · Frontend',title:'React Hooks — Building AI Interfaces',
+    subtitle:'Most AI-powered dashboards and chat interfaces are built in React. Hooks are the core mental model: useState manages data, useEffect handles side effects like API calls, and together they drive streaming AI responses.',
+    concepts:[
+      {h:'useState — reactive state',p:'<span class="code-inline">const [messages, setMessages] = useState([])</span> creates a reactive variable. When you call <span class="code-inline">setMessages([...messages, newMsg])</span>, React automatically re-renders the UI with the new data. This is how chat UIs update in real time.'},
+      {h:'useEffect — side effects',p:'<span class="code-inline">useEffect(() => { fetchData() }, [dependency])</span> runs code when a dependency changes. Use it to trigger API calls when a user submits a message, or to auto-scroll a chat window when new tokens arrive.'},
+      {h:'Streaming AI responses',p:'With Claude\'s streaming API, you receive tokens one by one. In React, you maintain a <span class="code-inline">streamingText</span> state variable and append each chunk: <span class="code-inline">setStreamingText(prev => prev + chunk)</span>. The UI updates live — exactly like Claude typing.'}
+    ],
+    callout:{label:'Pattern Used in This App',text:'This CodeLab itself uses this exact pattern. The AI output panel simulates streaming: a state variable holds the output text, and it\'s updated progressively. In a real build, you\'d connect this to <b>Anthropic\'s streaming API</b> and each token would arrive from the network.'},
+    exercise:{
+      title:'Exercise 4 — Chat State Setup',badge:'React Hooks',diff:2,isAi:true,
+      prompt:'Complete this React component skeleton for an AI trade assistant. Add:\n1. A <strong>messages</strong> state (array, starts empty)\n2. A <strong>loading</strong> state (boolean, starts false)\n3. A <strong>useEffect</strong> that logs "Chat ready" on mount',
+      starter:`import { useState, useEffect } from 'react';\n\nfunction TradingAssistant() {\n  // 1. Messages state (array)\n  const [] = useState();\n\n  // 2. Loading state (boolean)\n  const [] = useState();\n\n  // 3. Log on mount\n  useEffect(() => {\n    \n  }, []);  // empty array = run once on mount\n\n  return (\n    <div>\n      <h2>Trade Assistant</h2>\n      <p>Messages: {messages.length}</p>\n      <p>Loading: {loading.toString()}</p>\n    </div>\n  );\n}`,
+      hint:'useState syntax: <b>const [value, setValue] = useState(initialValue)</b>. Messages start as <b>[]</b>, loading starts as <b>false</b>. useEffect body: <b>console.log("Chat ready")</b>.',
+      simulatedAiOutput:`✓ React hooks structure correct!\n\nState initialized:\n  messages = []  (length: 0)\n  loading = false\n\nuseEffect fired on mount:\n  → "Chat ready"\n\nThis component will re-render whenever\nsetMessages() or setLoading() is called —\nenabling live streaming AI responses.`
+    }
+  },
+  {
+    id:'ai5',label:'AI',type:'ai',status:'locked',
+    name:'OpenAI / Codex',sub:'GPT-4o, Assistants, embeddings',
+    tag:'AI · OpenAI',title:'OpenAI API — GPT-4o, Codex & Embeddings',
+    subtitle:'OpenAI\'s API family covers GPT-4o for chat/reasoning, the Assistants API for stateful agents, and embeddings for semantic search. Many finance firms use OpenAI alongside or instead of Claude.',
+    concepts:[
+      {h:'GPT-4o vs Claude — similarities',p:'Both use the <span class="highlight">messages array</span> format with system/user/assistant roles. Both support <span class="highlight">tool/function calling</span>. Both have streaming. If you learn one, the other takes minutes to pick up — the concepts are identical, the syntax is nearly identical.'},
+      {h:'Embeddings — semantic search',p:'Embeddings convert text into a vector of numbers that captures meaning. <span class="code-inline">openai.embeddings.create(input="AAPL Q3 earnings", model="text-embedding-3-small")</span> returns a 1536-dimensional vector. Two similar texts have vectors that are <span class="highlight">close together</span> — enabling semantic search over trade notes, research, and filings.'},
+      {h:'Codex & code generation',p:'Codex (now part of GPT-4o) is optimised for code generation. You can pass it a natural language spec — "write a Python function that validates a trade dict" — and get working code. Modern usage: call <span class="code-inline">gpt-4o</span> directly with a coding-focused prompt rather than a separate Codex model.'}
+    ],
+    callout:{label:'Finance Use Cases',text:'<b>Embeddings + SQL:</b> store research notes as vectors, then semantically search for "notes about NVDA earnings risk" without exact keyword matching.<br><br><b>GPT-4o for code:</b> a BA can describe a reconciliation script in plain English and get a working Python draft — accelerating the workflow significantly.'},
+    exercise:{
+      title:'Exercise 5 — OpenAI Chat Call',badge:'GPT-4o',diff:2,isAi:true,
+      prompt:'Fill in this OpenAI API call to ask GPT-4o to explain what a cross-currency basis swap is in simple terms.',
+      starter:`from openai import OpenAI\n\nclient = OpenAI()\n\nresponse = client.chat.completions.create(\n    model="",       # ← use gpt-4o\n    messages=[\n        {\n            "role": "system",\n            "content": ""\n            # ← "You are a derivatives educator. Explain concepts simply."\n        },\n        {\n            "role": "user",\n            "content": ""\n            # ← ask about cross-currency basis swaps\n        }\n    ],\n    max_tokens=200\n)\n\nprint(response.choices[0].message.content)`,
+      hint:'Model: <b>"gpt-4o"</b>. System: set the role/persona. User: your question. The response is at <b>response.choices[0].message.content</b>.',
+      simulatedAiOutput:`✓ OpenAI API call structure correct!\n\n[Simulated GPT-4o response]\nA cross-currency basis swap is an agreement between two parties to exchange interest payments and principal in different currencies. For example, one party pays USD SOFR + spread while receiving JPY TONAR, with the "basis" being that spread adjustment needed to make the exchange fair. When the basis is negative (common in USD/JPY), it means USD funding is relatively scarce — a key signal in FX markets.`
+    }
+  },
+  {
+    id:'ai6',label:'AI',type:'ai',status:'locked',
+    name:'AI Agents',sub:'Reasoning, planning, tools',
+    tag:'AI · Agents',title:'AI Agents — Autonomous Multi-Step Reasoning',
+    subtitle:'An AI agent doesn\'t just respond — it reasons, plans, calls tools, observes results, and iterates until a goal is achieved. Agentic systems are the frontier of applied AI, and increasingly used in finance ops.',
+    concepts:[
+      {h:'The agent loop',p:'<span class="highlight">Perceive → Think → Act → Observe → Repeat</span><br>Claude receives a goal, chooses a tool to call, gets the result back, decides what to do next. This loop continues until the task is complete or it hits a dead end.'},
+      {h:'ReAct pattern',p:'<span class="highlight">Re</span>asoning + <span class="highlight">Act</span>ing. The model alternates between thinking steps (<span class="code-inline">Thought: I need to query the trade DB...</span>) and action steps (<span class="code-inline">Action: call get_pnl(desk="Macro", date="2025-01-15")</span>). Claude does this natively when given tools.'},
+      {h:'Multi-agent systems',p:'Complex workflows use multiple specialised agents: a <span class="highlight">Planner</span> breaks down the task, a <span class="highlight">Researcher</span> fetches data, a <span class="highlight">Verifier</span> checks outputs. Orchestration frameworks like <span class="ai-code-inline">LangGraph</span> and <span class="ai-code-inline">CrewAI</span> help coordinate them.'}
+    ],
+    callout:{label:'Finance Agent Example',text:'A <b>trade onboarding agent</b> at Point72 might: (1) read a new PM team\'s strategy spec, (2) query existing broker relationships, (3) identify gaps in coverage, (4) draft an email to the relevant prime broker, (5) log the onboarding task in the project tracker — all autonomously, triggered by a single instruction.'},
+    exercise:{
+      title:'Exercise 6 — Agent Tool Selection',badge:'Agents',diff:3,isAi:true,
+      prompt:'Given this list of available tools, write pseudocode showing the agent\'s reasoning loop to answer: "What is the total PnL for the Macro desk this week, and are there any missing trades?"\n\nAvailable: get_pnl(desk, date_range), list_trades(desk, date), check_reconciliation(desk, date)',
+      starter:`# Agent reasoning loop pseudocode\n# Goal: "Total PnL for Macro desk this week + any missing trades?"\n\n# Step 1: Think — what do I need first?\nthought_1 = ""\n\n# Step 2: Act — call the right tool\naction_1 = ""  # e.g. get_pnl(...)\n\n# Step 3: Observe result, think again\nthought_2 = ""\n\n# Step 4: Act again\naction_2 = ""\n\n# Step 5: Synthesise and respond\nfinal_response = ""\n\nprint(f"T1: {thought_1}")\nprint(f"A1: {action_1}")\nprint(f"T2: {thought_2}")\nprint(f"A2: {action_2}")`,
+      hint:'Step 1: think you need weekly PnL → call <b>get_pnl("Macro", "this_week")</b>. Step 2: once you have PnL, check for missing trades → call <b>check_reconciliation("Macro", "this_week")</b>.',
+      simulatedAiOutput:`✓ Agent reasoning structure correct!\n\nT1: I need the weekly PnL for Macro first.\nA1: get_pnl(desk="Macro", date_range="this_week")\n→ Result: $284,500 across 5 trading days\n\nT2: Now check if any trades are missing from reconciliation.\nA2: check_reconciliation(desk="Macro", date="2025-01-17")\n→ Result: 2 trades unmatched vs broker report\n\nFinal: Macro desk PnL this week: $284,500.\nAlert: 2 unreconciled trades on 2025-01-17 — investigate.`
+    }
+  }
+]
+
+};
+
+// ─────────────────────────────────
+// INTERVIEW Q&As
+// ─────────────────────────────────
+const interviewQs = [
+  {q:"Walk me through what a systematic trading desk does vs a discretionary one.",tags:['biz','mkt'],a:`<b>Systematic desks</b> use quantitative models and algorithms to generate and execute trades — the PM sets parameters, the machine executes. Decisions are rules-based, repeatable, and backtestable.<br><br><b>Discretionary desks</b> rely on a PM's judgment and views on markets.<br><br>Point72/Cubist runs <b>systematic</b> equity and macro strategies. As a BA, you're supporting the infrastructure these systems run on.`},
+  {q:"What SQL query finds the top 5 strategies by PnL this month?",tags:['sql'],a:`<pre>SELECT strategy, SUM(pnl) AS total_pnl\nFROM pnl_daily\nWHERE trade_date >= DATE_TRUNC('month', CURRENT_DATE)\nGROUP BY strategy\nORDER BY total_pnl DESC\nLIMIT 5;</pre>Key: <b>GROUP BY</b> to aggregate, <b>ORDER BY DESC</b> to rank, <b>LIMIT</b> to cap, <b>WHERE</b> with date filter.`},
+  {q:"Describe what a futures contract is and how it differs from a stock.",tags:['mkt'],a:`A <b>futures contract</b> is an agreement to buy/sell an asset at a specified price on a future date. You don't own the asset immediately — you have an obligation.<br><br>Vs stocks: stocks are <b>equity ownership</b> with no expiry. Futures <b>expire</b>, have <b>leverage</b> built-in via margin, and trade on exchanges like CME. Point72 runs strategies in global equities, futures, and FX.`},
+  {q:"Write a Python function to check if a trade dict is missing required fields.",tags:['py'],a:`<pre>REQUIRED = ["ticker","qty","price","desk","trade_date"]\n\ndef validate_trade(trade: dict) -> list:\n    return [f for f in REQUIRED if f not in trade]\n\ntrade = {"ticker":"AAPL","qty":100,"price":182.5}\nprint(validate_trade(trade))\n# → ['desk', 'trade_date']</pre>This pattern — validating incoming data dicts — is common in onboarding new PM teams into production.`},
+  {q:"What is broker reconciliation and why does it matter?",tags:['biz'],a:`<b>Broker reconciliation</b> compares your internal trade records against what the broker reports. Mismatches indicate execution errors, booking errors, or data feed issues.<br><br>As a BA at Point72, you'd run daily rec processes, investigate breaks, and coordinate with Ops, Tech, and brokers. Unresolved breaks → incorrect PnL, compliance issues, or failed settlements.`},
+  {q:"What is MCP and why is it important for AI integration?",tags:['ai','biz'],a:`<b>MCP (Model Context Protocol)</b> is an open standard by Anthropic that lets AI models connect to external tools, databases, and services in a standardised way.<br><br>Before MCP: every AI integration required custom code. With MCP, you build a server once and any MCP-compatible AI can use it.<br><br><pre># MCP server exposes tools:\nget_pnl(desk, date) → returns PnL data\nquery_positions() → returns current book\nsend_alert(msg) → triggers notification</pre>Quant firms are evaluating MCP to connect AI to their trade infrastructure without rebuilding integrations for each model.`},
+  {q:"Explain the difference between an AI tool call and a regular function call.",tags:['ai','py'],a:`A <b>regular function call</b> is deterministic — you explicitly call <code>get_pnl("Macro", "2025-01-15")</code> in your code.<br><br>An <b>AI tool call</b> is dynamic — you give Claude a set of available tools and a natural language goal, and Claude <i>decides</i> which tool to call, with what arguments, based on reasoning.<br><br><pre>tools = [get_pnl_tool, list_trades_tool, send_alert_tool]\n# Claude sees goal: "Check if Macro desk is reconciled"\n# Claude decides: call check_reconciliation("Macro", today)\n# Claude interprets result and responds</pre>This is the foundation of AI agents — autonomous multi-step tool use.`},
+  {q:"How would you use embeddings to improve trade note search?",tags:['ai','py'],a:`<b>Traditional search</b> uses keyword matching — searching for "NVDA earnings" misses notes that say "Nvidia quarterly results."<br><br><b>Embedding search</b> converts each note to a vector (a list of ~1536 numbers capturing meaning). To search, convert the query to a vector and find notes with the closest vectors.<br><br><pre>from openai import OpenAI\nclient = OpenAI()\n\ndef embed(text):\n    r = client.embeddings.create(\n        input=text,\n        model="text-embedding-3-small"\n    )\n    return r.data[0].embedding\n\nquery_vec = embed("Nvidia quarterly results")\n# Compare to stored note vectors → semantic match</pre>This powers intelligent document retrieval across research notes, PM commentary, and trade rationale.`},
+  {q:"What is the difference between GROUP BY and HAVING in SQL?",tags:['sql'],a:`<b>WHERE</b> filters rows <i>before</i> aggregation.<br><b>HAVING</b> filters groups <i>after</i> aggregation.<br><br><pre>SELECT desk, COUNT(*) AS trades, SUM(notional) AS total\nFROM trades\nWHERE trade_date >= '2025-01-01'   -- row filter first\nGROUP BY desk\nHAVING SUM(notional) > 10000000;  -- group filter after</pre>You cannot use SUM() inside a WHERE clause — that's what HAVING is for.`},
+  {q:"How would you explain a Large Language Model to a non-technical PM?",tags:['ai','biz'],a:`"Imagine you trained a system by having it read every book, research paper, and news article ever written — billions of documents. It learned patterns so well that it can now write, reason, and answer questions like a very well-read analyst.<br><br>When you ask it something, it doesn't look things up — it generates a response token by token, each word chosen based on what's most likely to come next given everything it's learned and everything you've told it so far.<br><br>Its weakness: it doesn't know what happened after its training cutoff, it can't access live data unless you give it tools, and it can sometimes confidently say things that are wrong (hallucination). Those limitations are why we pair it with real-time data tools and always verify outputs."<br><br>This answer demonstrates both technical understanding and the communication skill central to the BA role.`}
+];
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let mode = 'home';
+let activeLesson = null;
+let xp = 240;
+let completedLessons = new Set(['py1']);
+
+// ═══════════════════════════════════════════════════════════
+// RENDER ENGINE
+// ═══════════════════════════════════════════════════════════
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => b.className='mode-btn');
+  const btns = document.querySelectorAll('.mode-btn');
+  const modes = ['home','python','sql','ai','interview'];
+  const activeClasses = ['','py-active','sql-active','ai-active','interview-active'];
+  const idx = modes.indexOf(m);
+  if(idx>=0) btns[idx].classList.add(activeClasses[idx]);
+
+  renderSidebar();
+  if(m==='home') renderHome();
+  else if(m==='interview') renderInterview();
+  else {
+    const lessons = m==='python'?curriculum.python:m==='sql'?curriculum.sql:curriculum.ai;
+    if(activeLesson && lessons.find(l=>l.id===activeLesson.id)) renderLesson(activeLesson);
+    else {
+      const first = lessons.find(l=>l.status!=='locked')||lessons[0];
+      activeLesson = first;
+      renderLesson(first);
+    }
+  }
+}
+
+function renderSidebar() {
+  const sb = document.getElementById('sidebar');
+  if(mode==='home'||mode==='interview'){
+    let html='<div style="padding:0.75rem 0">';
+    html+='<div class="sidebar-header">Navigation</div>';
+    const navs=[
+      {icon:'⌂',name:'Dashboard',sub:'Overview & progress',m:'home',cls:'int-icon'},
+      {icon:'Py',name:'Python Track',sub:'5 lessons',m:'python',cls:'py-icon'},
+      {icon:'SQL',name:'SQL Track',sub:'4 lessons',m:'sql',cls:'sql-icon'},
+      {icon:'AI',name:'AI Engineering',sub:'6 lessons · New',m:'ai',cls:'ai-icon'},
+      {icon:'★',name:'Interview Prep',sub:'10 curated Q&As',m:'interview',cls:'int-icon'}
+    ];
+    navs.forEach(n=>{
+      const active=(mode===n.m);
+      html+=`<div class="lesson-item${active?' active int-item':''}" onclick="setMode('${n.m}')">
+        <div class="lesson-icon ${n.cls}">${n.icon}</div>
+        <div class="lesson-meta"><div class="lesson-name">${n.name}</div><div class="lesson-sub">${n.sub}</div></div>
+      </div>`;
+    });
+    html+='</div>';
+    sb.innerHTML=html;
+    return;
+  }
+
+  const lessons = mode==='python'?curriculum.python:mode==='sql'?curriculum.sql:curriculum.ai;
+  const trackLabel = mode==='python'?'Python Track':mode==='sql'?'SQL Track':'AI Engineering';
+  let html=`<div class="sidebar-header">${trackLabel}</div>`;
+  lessons.forEach(l=>{
+    const isActive = activeLesson && activeLesson.id===l.id;
+    const done = completedLessons.has(l.id);
+    const status = done?'✓':(l.status==='active'?'●':'○');
+    const statusClass = done?'status-done':(l.status==='active'?'status-active':'status-lock');
+    const badge = l.type==='ai'?'<span class="ai-badge">AI</span>':'';
+    html+=`<div class="lesson-item ${isActive?'active':''} ${l.type}-item" onclick="selectLesson('${l.id}')">
+      <div class="lesson-icon ${l.type}-icon">${l.label}</div>
+      <div class="lesson-meta">
+        <div class="lesson-name">${l.name}${badge}</div>
+        <div class="lesson-sub">${l.sub}</div>
+      </div>
+      <div class="lesson-status ${statusClass}">${status}</div>
+    </div>`;
+  });
+  sb.innerHTML=html;
+}
+
+function selectLesson(id) {
+  const all=[...curriculum.python,...curriculum.sql,...curriculum.ai];
+  const lesson=all.find(l=>l.id===id);
+  if(!lesson) return;
+  activeLesson=lesson;
+  renderSidebar();
+  renderLesson(lesson);
+}
+
+function renderLesson(lesson) {
+  const content=document.getElementById('content-area');
+  const tagClass=lesson.type==='py'?'py-tag':lesson.type==='sql'?'sql-tag':'ai-tag';
+  const btnClass=lesson.type==='py'?'py':lesson.type==='sql'?'sql':'ai';
+  const lang=lesson.type==='py'?'Python':lesson.type==='sql'?'SQL':'AI / Python';
+
+  let conceptsHtml = lesson.concepts.map(c=>`
+    <div class="concept-block">
+      <h3>${c.h}</h3>
+      <p>${c.p}</p>
+    </div>`).join('');
+
+  // Handle callout
+  let calloutHtml='';
+  const co=lesson.callout;
+  const coClass=lesson.type==='ai'?'ai-callout':'finance-callout';
+  if(co.isHtml){
+    calloutHtml=`<div class="${coClass}"><div class="fc-label">🤖 ${co.label}</div>${co.text}</div>`;
+  } else {
+    calloutHtml=`<div class="${coClass}"><div class="fc-label">${lesson.type==='ai'?'🤖':'🏦'} ${co.label}</div><p>${co.text}</p></div>`;
+  }
+
+  const ex=lesson.exercise;
+  const diffColors=['','#00d4aa','#f5a623','#f56b6b'];
+  const diffPips=[1,2,3].map(i=>`<div class="diff-pip" style="${i<=ex.diff?`background:${diffColors[ex.diff]}`:''};width:8px;height:8px;border-radius:2px"></div>`).join('');
+
+  content.innerHTML=`<div class="lesson-view fade-in">
+    <div class="lesson-left">
+      <div class="lesson-tag ${tagClass}">${lesson.tag}</div>
+      <div class="lesson-title">${lesson.title}</div>
+      <div class="lesson-subtitle">${lesson.subtitle}</div>
+      ${conceptsHtml}
+      ${calloutHtml}
+    </div>
+    <div class="lesson-right">
+      <div class="exercise-header">
+        <div class="ex-title">${ex.title}<span class="ex-badge">${ex.badge}</span></div>
+        <div class="difficulty">${diffPips}</div>
+      </div>
+      <div class="exercise-prompt">${ex.prompt.replace(/\n/g,'<br>')}</div>
+      <div class="editor-area">
+        <div class="editor-toolbar">
+          <span class="editor-lang">${lang} · Editor</span>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <button class="hint-btn" onclick="toggleHint()">Hint</button>
+            <button class="btn-run ${btnClass}" onclick="runCode('${lesson.id}')">▶ Run</button>
+          </div>
+        </div>
+        <textarea class="code-editor" id="editor-${lesson.id}" spellcheck="false">${ex.starter}</textarea>
+        <div class="hint-box" id="hint-box">${ex.hint}</div>
+        <div class="output-panel">
+          <div class="output-label">Output</div>
+          <div class="output-text out-info" id="output-${lesson.id}">Press ▶ Run to execute…</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderHome() {
+  const content=document.getElementById('content-area');
+  const pyDone=curriculum.python.filter(l=>completedLessons.has(l.id)).length;
+  const sqlDone=curriculum.sql.filter(l=>completedLessons.has(l.id)).length;
+  const aiDone=curriculum.ai.filter(l=>completedLessons.has(l.id)).length;
+  const pyPct=Math.round(pyDone/curriculum.python.length*100);
+  const sqlPct=Math.round(sqlDone/curriculum.sql.length*100);
+  const aiPct=Math.round(aiDone/curriculum.ai.length*100);
+
+  content.innerHTML=`<div class="dash-view fade-in">
+    <div class="dash-hero">
+      <h1>Ready for <em>Point72</em>.</h1>
+      <p>Your personalised prep track for the Senior BA role at Cubist Systematic Strategies. Python, SQL, AI engineering, and market knowledge — built for the JD.</p>
+      <div class="dash-target">
+        <div class="target-logo">P72</div>
+        <div class="target-text">
+          <b>Senior Business Analyst — Cubist / Point72</b>
+          Singapore · Systematic Equity & Macro · Python + SQL required
+        </div>
+      </div>
+    </div>
+    <div class="dash-grid">
+      <div class="stat-card"><div class="stat-val green">${pyDone+sqlDone+aiDone}</div><div class="stat-label">Lessons Done</div></div>
+      <div class="stat-card"><div class="stat-val amber">${xp}</div><div class="stat-label">XP Earned</div></div>
+      <div class="stat-card"><div class="stat-val purple">${aiDone}</div><div class="stat-label">AI Lessons</div></div>
+      <div class="stat-card"><div class="stat-val blue">10</div><div class="stat-label">Interview Q&As</div></div>
+    </div>
+    <div class="dash-tracks">
+      <div class="track-card" onclick="setMode('python')">
+        <div class="track-icon">🐍</div>
+        <div class="track-name" style="color:var(--py)">Python Track</div>
+        <div class="track-desc">Variables, data structures, loops, functions, Pandas — all with trading data as context.</div>
+        <div class="track-progress-bar"><div class="track-fill fill-py" style="width:${pyPct}%"></div></div>
+        <div class="track-pct">${pyDone}/${curriculum.python.length} lessons · ${pyPct}%</div>
+      </div>
+      <div class="track-card" onclick="setMode('sql')">
+        <div class="track-icon">🗄️</div>
+        <div class="track-name" style="color:var(--sql)">SQL Track</div>
+        <div class="track-desc">SELECT, WHERE, GROUP BY, JOINs — all in the context of trade DBs and PnL reporting.</div>
+        <div class="track-progress-bar"><div class="track-fill fill-sql" style="width:${sqlPct}%"></div></div>
+        <div class="track-pct">${sqlDone}/${curriculum.sql.length} lessons · ${sqlPct}%</div>
+      </div>
+      <div class="track-card" onclick="setMode('ai')">
+        <div class="track-icon">🤖</div>
+        <div class="track-name" style="color:var(--ai)">AI Engineering</div>
+        <div class="track-desc">LLMs, Claude API, MCP protocol, React hooks, OpenAI/Codex, and AI agents — the frontier skill set.</div>
+        <div class="track-progress-bar"><div class="track-fill fill-ai" style="width:${aiPct}%"></div></div>
+        <div class="track-pct">${aiDone}/${curriculum.ai.length} lessons · ${aiPct}%</div>
+      </div>
+    </div>
+    <div class="next-up">
+      <h3>Continue Learning</h3>
+      <div class="next-items">
+        <div class="next-item" onclick="setMode('python');selectLesson('py2')">
+          <div class="next-num py">Py</div>
+          <div class="next-info"><div class="next-name">Lists & Dictionaries</div><div class="next-track">Python · Lesson 2</div></div>
+          <div class="next-arrow">→</div>
+        </div>
+        <div class="next-item" onclick="setMode('sql');selectLesson('sql1')">
+          <div class="next-num sql">SQL</div>
+          <div class="next-info"><div class="next-name">SELECT Basics</div><div class="next-track">SQL · Lesson 1</div></div>
+          <div class="next-arrow">→</div>
+        </div>
+        <div class="next-item" onclick="setMode('ai');selectLesson('ai1')">
+          <div class="next-num ai">AI</div>
+          <div class="next-info"><div class="next-name">LLMs & Prompting</div><div class="next-track">AI Engineering · Lesson 1</div></div>
+          <div class="next-arrow">→</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderInterview() {
+  const content=document.getElementById('content-area');
+  let html='<div class="interview-view fade-in">';
+  interviewQs.forEach((q,i)=>{
+    const tags=q.tags.map(t=>`<span class="int-tag-pill tag-${t}">${t.toUpperCase()}</span>`).join('');
+    html+=`<div class="int-card" id="iq${i}" onclick="toggleIntQ(${i})">
+      <div class="int-q">${q.q}</div>
+      <div class="int-tags">${tags}</div>
+      <div style="font-size:0.68rem;color:var(--text3);font-family:'JetBrains Mono',monospace">Click to reveal ↓</div>
+      <div class="int-answer">${q.a}</div>
+    </div>`;
+  });
+  html+='</div>';
+  content.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════════════
+// INTERACTIONS
+// ═══════════════════════════════════════════════════════════
+
+function toggleIntQ(i){
+  document.getElementById(`iq${i}`).classList.toggle('open');
+}
+
+function toggleHint(){
+  const box=document.getElementById('hint-box');
+  if(box) box.classList.toggle('visible');
+}
+
+function runCode(lessonId){
+  const all=[...curriculum.python,...curriculum.sql,...curriculum.ai];
+  const lesson=all.find(l=>l.id===lessonId);
+  if(!lesson) return;
+  const code=document.getElementById(`editor-${lessonId}`).value.trim();
+  const outEl=document.getElementById(`output-${lessonId}`);
+
+  // SQL simulated
+  if(lesson.exercise.isSql){
+    const res=lesson.exercise.simulatedResult;
+    const blanks=(code.match(/= *\n/g)||[]).length + (code.match(/> *;/g)||[]).length + (code.match(/ON t\. = i\./g)||[]).length;
+    if(blanks>0||code===lesson.exercise.starter.trim()){
+      outEl.className='output-text out-error';
+      outEl.textContent='⚠ Fill in the blanks before running.';
+      return;
+    }
+    let html=`<span class="out-success">✓ ${res.rows.length} row(s) returned</span>\n`;
+    html+=`<table class="out-table"><thead><tr>${res.cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;
+    res.rows.forEach(r=>{html+=`<tr>${r.map(v=>`<td>${v}</td>`).join('')}</tr>`;});
+    html+='</tbody></table>';
+    outEl.className='output-text';
+    outEl.innerHTML=html;
+    awardXP(lessonId,50);
+    return;
+  }
+
+  // AI lessons — simulated output
+  if(lesson.exercise.isAi){
+    const checks=aiCheck(lessonId,code);
+    if(checks.error){
+      outEl.className='output-text out-error';
+      outEl.textContent=`⚠ ${checks.error}`;
+      return;
+    }
+    outEl.className='output-text';
+    simulateStream(outEl, lesson.exercise.simulatedAiOutput, lessonId);
+    return;
+  }
+
+  // Python — pattern matching
+  const checks=pyCheck(lessonId,code);
+  if(checks.error){
+    outEl.className='output-text out-error';
+    outEl.textContent=`⚠ ${checks.error}`;
+    return;
+  }
+  outEl.className='output-text';
+  outEl.innerHTML=`<span class="out-success">✓ Ran successfully!</span>\n\n${lesson.exercise.expectedOutput}`;
+  awardXP(lessonId,40);
+}
+
+function simulateStream(el, text, lessonId){
+  el.innerHTML='<span class="out-ai">⬡ Simulating AI response...</span>\n\n';
+  let i=0;
+  const chars=text.split('');
+  const interval=setInterval(()=>{
+    if(i<chars.length){
+      el.textContent=el.textContent.replace('⬡ Simulating AI response...\n\n','')+chars[i];
+      i++;
+    } else {
+      clearInterval(interval);
+      awardXP(lessonId,60);
+    }
+  },6);
+}
+
+function aiCheck(id,code){
+  if(id==='ai1'){
+    if(!code.includes('system')&&!code.toLowerCase().includes('trading')) return {error:'Add a system prompt describing the assistant role.'};
+    if(!code.includes('content')&&code.includes('""')) return {error:'Fill in both the system and user message content.'};
+  }
+  if(id==='ai2'){
+    if(!code.includes('get_pnl_summary')) return {error:'Tool name should be "get_pnl_summary".'};
+    if(!code.includes('"desk"')) return {error:'Add "desk" as a property name.'};
+    if(!code.includes('"date"')) return {error:'Add "date" as a property name.'};
+  }
+  if(id==='ai3'){
+    if(!code.includes('get_daily_pnl')) return {error:'Tool name should be "get_daily_pnl".'};
+    if(!code.includes('description')) return {error:'Add a description for the tool.'};
+  }
+  if(id==='ai4'){
+    if(!code.includes('useState')) return {error:'Use useState to define your state variables.'};
+    if(!code.includes('[]')) return {error:'messages state should initialise as an empty array [].'};
+    if(!code.includes('false')) return {error:'loading state should initialise as false.'};
+    if(!code.includes('useEffect')) return {error:'Add a useEffect hook.'};
+  }
+  if(id==='ai5'){
+    if(!code.includes('gpt-4o')) return {error:'Set the model to "gpt-4o".'};
+    if(!code.includes('system')&&code.includes('""')) return {error:'Fill in the system and user messages.'};
+  }
+  if(id==='ai6'){
+    if(!code.includes('get_pnl')) return {error:'Your agent should call get_pnl as the first action.'};
+    if(!code.includes('check_reconciliation')&&!code.includes('reconcil')) return {error:'Your agent should also call check_reconciliation.'};
+  }
+  return {};
+}
+
+function pyCheck(id,code){
+  if(id==='py1'){if(!code.includes('ESH25'))return{error:"ticker should be 'ESH25'"};if(!code.includes('5204.25'))return{error:"price should be 5204.25"};if(!code.includes('True'))return{error:"is_active should be True"}}
+  if(id==='py2'){if(!code.includes('NVDA')||!code.includes('AAPL'))return{error:"positions should contain AAPL, NVDA, TSLA"};if(!code.includes('Quant Equity'))return{error:"desk should be 'Quant Equity'"}}
+  if(id==='py3'){if(!code.includes('pnl > 0'))return{error:"use pnl > 0 for PROFIT"};if(!code.includes('pnl == 0'))return{error:"use pnl == 0 (double equals) for FLAT"}}
+  if(id==='py4'){if(!code.includes('price * quantity')&&!code.includes('price*quantity'))return{error:"return price * quantity"}}
+  if(id==='py5'){if(!code.includes('> 0'))return{error:"filter with pnl > 0"};if(!code.includes('"desk"')&&!code.includes("'desk'"))return{error:"groupby 'desk'"}}
+  return{};
+}
+
+function awardXP(lessonId,pts){
+  if(!completedLessons.has(lessonId)){
+    completedLessons.add(lessonId);
+    xp+=pts;
+    document.getElementById('xp-display').textContent=xp;
+    renderSidebar();
+  }
+}
+
+// INIT
+setMode('home');
+</script>
+</body>
+</html>
